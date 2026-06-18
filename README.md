@@ -5,6 +5,12 @@ Hobby BT Masterpanel*) a **Home Assistant** přes levný **ESP32-C3**, který se
 **Bluetooth LE** připojí na řídicí jednotku karavanu a vystaví její data i ovládání
 jako nativní entity HA — světla, stmívače, lednici, topení, bojler, baterii a teploty.
 
+Jde o **integraci do Home Assistant přes Wi-Fi a Bluetooth LE prostřednictvím ESP32**:
+
+```
+Karavan (panel HobbyConnect)  ──BLE──►  ESP32-C3  ──Wi-Fi──►  Home Assistant
+```
+
 Stejný HobbyConnect modul používají i karavany **Fendt**, takže projekt staví na
 ESPHome komponentě [`fendt_caravan`](https://github.com/esphome/esphome/pull/13327)
 (PR #13327, autor *rawsludge*), kterou jsme **rozšířili** o plnou paritu s mobilní
@@ -28,6 +34,15 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 | 🧊 Lednice | zap/vyp · režim (12V/230V/plyn) · teplota | 🧪 ovládání (formát ověřit) |
 | 🔌 Napájení | 230 V připojeno, verze SW | ✅ čtení |
 | 💧 Nádrž vody | — | ⏳ čeká na zachycení při napouštění |
+
+## ⚡ Co potřebuješ k rozběhnutí
+
+- 🏠 **Home Assistant** — běžící instance
+- 🧩 **ESPHome** — nejsnáz jako add-on v HA
+- 📡 **ESP32-C3** (s BLE; ⚠️ jen 2,4 GHz Wi-Fi) + USB-C kabel a napájení
+- 📶 **2,4GHz Wi-Fi** v dosahu karavanu
+
+👉 **Návod od nuly krok za krokem:** [`docs/getting-started.md`](docs/getting-started.md)
 
 ## 🧰 Hardware
 

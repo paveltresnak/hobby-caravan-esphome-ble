@@ -5,6 +5,12 @@ Hobby BT Masterpanel*) and **Home Assistant**, using a cheap **ESP32-C3** that c
 to the caravan's control unit over **Bluetooth LE** and exposes its data and controls
 as native HA entities — lights, dimmers, fridge, heating, boiler, battery and temperatures.
 
+It is a **Home Assistant integration over Wi-Fi and Bluetooth LE via an ESP32**:
+
+```
+Caravan (HobbyConnect panel)  ──BLE──►  ESP32-C3  ──Wi-Fi──►  Home Assistant
+```
+
 The same HobbyConnect module is also used by **Fendt** caravans, so this project builds
 on the ESPHome component [`fendt_caravan`](https://github.com/esphome/esphome/pull/13327)
 (PR #13327 by *rawsludge*), which we **extended** to full parity with the HobbyConnect
@@ -27,6 +33,15 @@ mobile app and added **control (WRITE) commands**.
 | 🧊 Fridge | on/off · source (12V/230V/gas) · temperature | 🧪 control (format to verify) |
 | 🔌 Power | 230 V connected, firmware version | ✅ read |
 | 💧 Fresh water tank | `WATER_LEVEL` | ⏳ scale TBD (capture while filling) |
+
+## ⚡ What you need
+
+- 🏠 **Home Assistant** — a running instance
+- 🧩 **ESPHome** — easiest as a HA add-on
+- 📡 **ESP32-C3** (with BLE; ⚠️ 2.4 GHz Wi-Fi only) + USB-C cable and power
+- 📶 **2.4 GHz Wi-Fi** within range of the caravan
+
+👉 **Step-by-step from scratch:** [`docs/getting-started.md`](docs/getting-started.md)
 
 ## 🧰 Hardware
 

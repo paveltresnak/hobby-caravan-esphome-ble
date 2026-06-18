@@ -6,6 +6,12 @@ Hobby BT Masterpanel*) und **Home Assistant**: Ein günstiger **ESP32-C3** verbi
 Bedienung als native HA-Entitäten bereit — Licht, Dimmer, Kühlschrank, Heizung, Boiler,
 Batterie und Temperaturen.
 
+Es ist eine **Home-Assistant-Integration über WLAN und Bluetooth LE mittels ESP32**:
+
+```
+Wohnwagen (HobbyConnect-Panel)  ──BLE──►  ESP32-C3  ──WLAN──►  Home Assistant
+```
+
 Dasselbe HobbyConnect-Modul verwenden auch **Fendt**-Wohnwagen, daher baut dieses Projekt
 auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/pull/13327)
 (PR #13327 von *rawsludge*) auf, die wir auf volle Parität mit der HobbyConnect-App
@@ -28,6 +34,15 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 | 🧊 Kühlschrank | Ein/Aus · Quelle (12V/230V/Gas) · Temperatur | 🧪 Steuerung (Format zu prüfen) |
 | 🔌 Stromversorgung | 230 V verbunden, Firmware-Version | ✅ lesen |
 | 💧 Frischwassertank | `WATER_LEVEL` | ⏳ Skala offen (beim Befüllen erfassen) |
+
+## ⚡ Was du brauchst
+
+- 🏠 **Home Assistant** — eine laufende Instanz
+- 🧩 **ESPHome** — am einfachsten als HA-Add-on
+- 📡 **ESP32-C3** (mit BLE; ⚠️ nur 2,4-GHz-WLAN) + USB-C-Kabel und Stromversorgung
+- 📶 **2,4-GHz-WLAN** in Reichweite des Wohnwagens
+
+👉 **Schritt für Schritt von Null:** [`docs/getting-started.md`](docs/getting-started.md)
 
 ## 🧰 Hardware
 

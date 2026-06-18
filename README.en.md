@@ -32,7 +32,7 @@ mobile app and added **control (WRITE) commands**.
 
 - **ESP32-C3** (SuperMini) — note: **2.4 GHz Wi-Fi only** (5 GHz won't connect).
 - Caravan **Hobby De Luxe 495 UL** with *HobbyConnect / Hobby BT Masterpanel*.
-- BLE device `HobbyConnect Data`, MAC `DE:00:32:00:61:44`.
+- BLE device `HobbyConnect Data`, MAC `XX:XX:XX:XX:XX:XX` (find yours via a scan).
 - Details: [`docs/hardware.md`](docs/hardware.md).
 
 ## 🚀 Quick install

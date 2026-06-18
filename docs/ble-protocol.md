@@ -8,7 +8,7 @@ Hobby BT Masterpanel MoCa 6121980022*, čip BLUENRG-M0L). Stejný modul je i ve 
 | Položka | Hodnota |
 |---------|---------|
 | BLE název | `HobbyConnect Data` |
-| MAC | `DE:00:32:00:61:44` (od dubna nezměněna, ač má příznak random/private) |
+| MAC | `XX:XX:XX:XX:XX:XX` (najdi si svůj — sken; náš měl příznak random/private, přesto stabilní) |
 | Service UUID | `C7841029-FE7C-4894-8532-F97908EF1AE4` |
 | Characteristic | `0x0001` — **NOTIFY + WRITE** |
 | Po připojení | komponenta pošle `net-BT_ID-…` a `net-BT_VARS` → jednotka začne notifikovat |

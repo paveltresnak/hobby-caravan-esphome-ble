@@ -33,7 +33,7 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 
 - **ESP32-C3** (SuperMini) — pozor, jen **2,4 GHz Wi-Fi** (5 GHz se nepřipojí).
 - Karavan **Hobby De Luxe 495 UL** s panelem *HobbyConnect / Hobby BT Masterpanel*.
-- BLE zařízení `HobbyConnect Data`, MAC `DE:00:32:00:61:44`.
+- BLE zařízení `HobbyConnect Data`, MAC `XX:XX:XX:XX:XX:XX` (najdi si svůj skenem).
 - Podrobnosti: [`docs/hardware.md`](docs/hardware.md).
 
 ## 🚀 Instalace ve zkratce

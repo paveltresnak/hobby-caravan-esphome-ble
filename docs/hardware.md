@@ -17,7 +17,7 @@
 | Položka | Hodnota |
 |---------|---------|
 | Název | `HobbyConnect Data` |
-| MAC | `DE:00:32:00:61:44` (najdi si svou — sken v ESPHome logu) |
+| MAC | `XX:XX:XX:XX:XX:XX` (najdi si svou — sken v ESPHome logu / nRF Connect) |
 | Service | `C7841029-FE7C-4894-8532-F97908EF1AE4` |
 | Characteristic | `0x0001` (NOTIFY + WRITE) |
 

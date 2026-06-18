@@ -33,7 +33,7 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 
 - **ESP32-C3** (SuperMini) — Achtung: **nur 2,4-GHz-WLAN** (5 GHz verbindet nicht).
 - Wohnwagen **Hobby De Luxe 495 UL** mit *HobbyConnect / Hobby BT Masterpanel*.
-- BLE-Gerät `HobbyConnect Data`, MAC `DE:00:32:00:61:44`.
+- BLE-Gerät `HobbyConnect Data`, MAC `XX:XX:XX:XX:XX:XX` (eigene per Scan ermitteln).
 - Details: [`docs/hardware.md`](docs/hardware.md).
 
 ## 🚀 Schnellinstallation

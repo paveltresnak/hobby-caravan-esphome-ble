@@ -32,7 +32,7 @@ esp32_ble_tracker:
     active: true
 
 ble_client:
-  - mac_address: DE:00:32:00:61:44
+  - mac_address: XX:XX:XX:XX:XX:XX  # <-- nahrad MAC sveho panelu (sken: ESPHome log / nRF Connect)
     id: hobby_ble
     auto_connect: true
 

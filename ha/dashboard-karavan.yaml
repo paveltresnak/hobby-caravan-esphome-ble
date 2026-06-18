@@ -1,8 +1,9 @@
-# Záložka "Karavan" pro Home Assistant (styl sections).
-# Vyžaduje HACS: apexcharts-card. Vlož přes Dashboard → Upravit → Raw konfigurace jako nový view.
-# Uprav prefix entit (hobby_495ul_karavan_) dle názvu svého zařízení.
+# Záložka "Karavan" pro Home Assistant (sections, 3 vyvážené sloupce).
+# Vyžaduje HACS: apexcharts-card (volitelné). Display precision senzorů se nastavuje
+# v HA (Nastavení → entity → zobrazená přesnost) nebo přes accuracy_decimals v ESPHome.
 type: sections
 max_columns: 3
+dense_section_placement: true
 title: Karavan
 path: karavan
 icon: mdi:rv-truck
@@ -10,7 +11,7 @@ sections:
 - type: grid
   cards:
   - type: heading
-    heading: 🚐 Hobby De Luxe 495 UL
+    heading: 🚐 Stav & baterie
     icon: mdi:rv-truck
   - type: entities
     title: Klima & napájení
@@ -28,21 +29,6 @@ sections:
     - entity: sensor.hobby_495ul_karavan_sw_verze
       name: SW verze
       icon: mdi:application-braces-outline
-  - type: custom:apexcharts-card
-    graph_span: 24h
-    header:
-      show: true
-      title: 🌡️ Teploty (24 h)
-    series:
-    - entity: sensor.hobby_495ul_karavan_teplota_vnitrni
-      name: Vnitřní
-    - entity: sensor.hobby_495ul_karavan_teplota_venkovni
-      name: Venkovní
-- type: grid
-  cards:
-  - type: heading
-    heading: 🔋 Baterie & voda
-    icon: mdi:car-battery
   - type: horizontal-stack
     cards:
     - type: gauge
@@ -67,6 +53,7 @@ sections:
         yellow: 11.8
         green: 12.5
   - type: entities
+    title: Baterie & voda
     show_header_toggle: false
     entities:
     - entity: sensor.hobby_495ul_karavan_baterie_proud
@@ -128,7 +115,7 @@ sections:
 - type: grid
   cards:
   - type: heading
-    heading: 🧊 Lednice
+    heading: 🧊 Lednice & ❄️ klima
     icon: mdi:fridge
   - type: entities
     title: Lednice (TEST – ověřit)
@@ -140,12 +127,6 @@ sections:
       name: Režim
     - entity: number.hobby_495ul_karavan_lednice_teplota_test
       name: Teplota (1–5)
-- type: grid
-  cards:
-  - type: heading
-    heading: ❄️ Klimatizace Sinclair
-    heading_style: title
-    icon: mdi:air-conditioner
   - type: tile
     entity: climate.karavan_klimatizace
     name: Klima – zap/vyp & režim

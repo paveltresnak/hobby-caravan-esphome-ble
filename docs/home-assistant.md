@@ -27,6 +27,24 @@ Po nahrání firmwaru se ESP32-C3 objeví v HA jako **ESPHome** integrace
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje
 > na 0–15 panelu. Po restartu ESP se stav světel může lišit, než přijde první notify.
 
+## Přesnost zobrazení (display precision)
+ESP posílá floaty (např. 13,90 V je v 32bit floatu `13.8999996…`). **Zobrazenou
+přesnost** řídí HA — buď `accuracy_decimals` v ESPHome (→ *suggested display
+precision*), nebo uživatelský override v HA (Nastavení → Zařízení → entita →
+⚙ → *Zobrazená přesnost*). Doporučené hodnoty:
+
+| Senzor | Des. míst |
+|--------|-----------|
+| Teploty (vnitřní/venkovní/baterie) | 1 |
+| Napětí baterie | 2 |
+| Proud baterie | 1 |
+| Nabití (%) | 0 |
+| Zbývající čas (h) | 1 |
+| Nádrž vody | 0 |
+
+> Tip přes WS API: `config/entity_registry/update` s
+> `options_domain: "sensor"`, `options: {display_precision: N}`.
+
 ## Dashboard
 Ukázková záložka **„Karavan"** (styl *sections*) je v
 [`../ha/dashboard-karavan.yaml`](../ha/dashboard-karavan.yaml). Lze ji vložit přes

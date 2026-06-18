@@ -1,6 +1,5 @@
 # Záložka "Karavan" pro Home Assistant (sections, 3 vyvážené sloupce).
-# Vyžaduje HACS: apexcharts-card (volitelné). Display precision senzorů se nastavuje
-# v HA (Nastavení → entity → zobrazená přesnost) nebo přes accuracy_decimals v ESPHome.
+# Display precision senzorů: HA → entita → zobrazená přesnost (viz docs/home-assistant.md).
 type: sections
 max_columns: 3
 dense_section_placement: true
@@ -139,6 +138,8 @@ sections:
       - dry
       - fan_only
       - auto
+    grid_options:
+      columns: full
   - type: thermostat
     entity: climate.karavan_klimatizace
   - type: entities

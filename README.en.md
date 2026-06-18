@@ -41,7 +41,7 @@ mobile app and added **control (WRITE) commands**.
 - 📡 **ESP32-C3** (with BLE; ⚠️ 2.4 GHz Wi-Fi only) + USB-C cable and power
 - 📶 **2.4 GHz Wi-Fi** within range of the caravan
 
-👉 **Step-by-step from scratch:** [`docs/getting-started.md`](docs/getting-started.md)
+👉 **Step-by-step from scratch:** [`docs/getting-started.en.md`](docs/getting-started.en.md)
 
 ## 🧰 Hardware
 

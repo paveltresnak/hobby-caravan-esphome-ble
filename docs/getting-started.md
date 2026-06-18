@@ -4,6 +4,8 @@ Krok za krokem od prázdných rukou k běžícímu karavanu v Home Assistantu.
 Žádné pájení ani zásahy do elektriky karavanu — komunikace s panelem je
 **bezdrátová přes Bluetooth LE**.
 
+> 🌍 Jazyky: **Česky** · [English](getting-started.en.md) · [Deutsch](getting-started.de.md)
+
 ## 1. Co budeš potřebovat (prerekvizity)
 
 - **Home Assistant** — běžící instance (HA OS / Container / Supervised). → https://www.home-assistant.io/

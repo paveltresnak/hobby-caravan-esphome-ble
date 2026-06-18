@@ -42,7 +42,7 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 - 📡 **ESP32-C3** (mit BLE; ⚠️ nur 2,4-GHz-WLAN) + USB-C-Kabel und Stromversorgung
 - 📶 **2,4-GHz-WLAN** in Reichweite des Wohnwagens
 
-👉 **Schritt für Schritt von Null:** [`docs/getting-started.md`](docs/getting-started.md)
+👉 **Schritt für Schritt von Null:** [`docs/getting-started.de.md`](docs/getting-started.de.md)
 
 ## 🧰 Hardware
 

@@ -51,36 +51,50 @@ sensor:
     name: "Karavan teplota vnitrni"
     filters:
       - throttle_average: 5s
+      - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: temp_out
     name: "Karavan teplota venkovni"
     filters:
       - throttle_average: 5s
+      - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_voltage
     name: "Karavan baterie napeti"
+    filters:
+      - round: 2
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_current
     name: "Karavan baterie proud"
+    filters:
+      - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_soc
     name: "Karavan baterie nabiti"
+    filters:
+      - round: 0
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_remaining
     name: "Karavan baterie zbyva"
+    filters:
+      - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_temp
     name: "Karavan baterie teplota"
+    filters:
+      - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: water_level
     name: "Karavan nadrz vody"
+    filters:
+      - round: 0
 
 switch:
   - platform: fendt_caravan

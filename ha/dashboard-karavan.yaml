@@ -81,28 +81,6 @@ sections:
     - entity: sensor.hobby_495ul_karavan_nadrz_vody
       name: Nádrž vody
       icon: mdi:water
-  - type: custom:apexcharts-card
-    graph_span: 24h
-    header:
-      show: true
-      title: Baterie (24 h)
-    yaxis:
-    - id: v
-      min: 10
-      max: 16
-      decimals: 1
-    - id: pct
-      opposite: true
-      min: 0
-      max: 100
-      decimals: 0
-    series:
-    - entity: sensor.hobby_495ul_karavan_baterie_napeti
-      name: Napětí (V)
-      yaxis_id: v
-    - entity: sensor.hobby_495ul_karavan_baterie_nabiti
-      name: Nabití (%)
-      yaxis_id: pct
 - type: grid
   cards:
   - type: heading
@@ -144,10 +122,13 @@ sections:
     - entity: switch.hobby_495ul_karavan_svetla_vse
       name: Všechna světla
       icon: mdi:lightbulb-group
+    - entity: switch.hobby_495ul_karavan_bojler
+      name: Ohřev vody (bojler)
+      icon: mdi:water-boiler
 - type: grid
   cards:
   - type: heading
-    heading: 🧊 Lednice & 💧 bojler
+    heading: 🧊 Lednice
     icon: mdi:fridge
   - type: entities
     title: Lednice (TEST – ověřit)
@@ -159,19 +140,24 @@ sections:
       name: Režim
     - entity: number.hobby_495ul_karavan_lednice_teplota_test
       name: Teplota (1–5)
-  - type: entities
-    title: Ohřev vody
-    show_header_toggle: false
-    entities:
-    - entity: switch.hobby_495ul_karavan_bojler
-      name: Bojler
-      icon: mdi:water-boiler
 - type: grid
   cards:
   - type: heading
     heading: ❄️ Klimatizace Sinclair
     heading_style: title
     icon: mdi:air-conditioner
+  - type: tile
+    entity: climate.karavan_klimatizace
+    name: Klima – zap/vyp & režim
+    features:
+    - type: climate-hvac-modes
+      hvac_modes:
+      - 'off'
+      - cool
+      - heat
+      - dry
+      - fan_only
+      - auto
   - type: thermostat
     entity: climate.karavan_klimatizace
   - type: entities

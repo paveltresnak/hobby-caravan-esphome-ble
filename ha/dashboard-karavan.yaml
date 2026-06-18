@@ -1,0 +1,144 @@
+# Záložka "Karavan" pro Home Assistant (styl sections).
+# Vlož přes: Dashboard → Upravit → Raw konfigurace → přidej jako nový view.
+# Uprav prefix entit (hobby_495ul_karavan_) podle názvu svého zařízení.
+type: sections
+max_columns: 4
+title: Karavan
+path: karavan
+icon: mdi:rv-truck
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: 🚐 Hobby De Luxe 495 UL
+        icon: mdi:rv-truck
+      - type: entities
+        title: Klima & napájení
+        icon: mdi:thermometer
+        entities:
+          - entity: sensor.hobby_495ul_karavan_teplota_vnitrni
+            name: Teplota vnitřní
+            icon: mdi:home-thermometer
+          - entity: sensor.hobby_495ul_karavan_teplota_venkovni
+            name: Teplota venkovní
+            icon: mdi:thermometer
+          - entity: sensor.hobby_495ul_karavan_napajeni
+            name: Napájení 230V
+            icon: mdi:power-plug
+          - entity: sensor.hobby_495ul_karavan_sw_verze
+            name: SW verze
+            icon: mdi:application-braces-outline
+      - type: entities
+        title: Baterie & voda
+        icon: mdi:car-battery
+        entities:
+          - entity: sensor.hobby_495ul_karavan_baterie_nabiti
+            name: Nabití
+            icon: mdi:battery
+          - entity: sensor.hobby_495ul_karavan_baterie_napeti
+            name: Napětí
+            icon: mdi:flash
+          - entity: sensor.hobby_495ul_karavan_baterie_proud
+            name: Proud
+            icon: mdi:current-dc
+          - entity: sensor.hobby_495ul_karavan_baterie_zbyva
+            name: Zbývá
+            icon: mdi:timer-sand
+          - entity: sensor.hobby_495ul_karavan_baterie_teplota
+            name: Teplota baterie
+            icon: mdi:thermometer-lines
+          - entity: sensor.hobby_495ul_karavan_nadrz_vody
+            name: Nádrž vody
+            icon: mdi:water
+  - type: grid
+    cards:
+      - type: heading
+        heading: 💡 Světla
+        icon: mdi:lightbulb-group
+      - type: entities
+        title: Spínaná
+        entities:
+          - entity: switch.hobby_495ul_karavan_svetlo_kuchyn
+            name: Kuchyň
+          - entity: switch.hobby_495ul_karavan_svetlo_venku
+            name: Venku
+          - entity: switch.hobby_495ul_karavan_ambient_1
+            name: Ambient 1
+          - entity: switch.hobby_495ul_karavan_ambient_2
+            name: Ambient 2
+          - entity: switch.hobby_495ul_karavan_ambient_3
+            name: Ambient 3
+      - type: light
+        entity: light.hobby_495ul_karavan_svetlo_obyvak
+        name: Obývák (stmívač)
+      - type: light
+        entity: light.hobby_495ul_karavan_ambient_zadni_okno
+        name: Ambient zadní okno
+      - type: entities
+        title: Centrální
+        entities:
+          - entity: switch.hobby_495ul_karavan_hlavni_vypinac
+            name: Hlavní vypínač
+            icon: mdi:power
+          - entity: switch.hobby_495ul_karavan_svetla_vse
+            name: Všechna světla
+            icon: mdi:lightbulb-group
+  - type: grid
+    cards:
+      - type: heading
+        heading: 🔥 Topení & 🧊 lednice
+        icon: mdi:heating-coil
+      - type: entities
+        title: Topení
+        entities:
+          - entity: switch.hobby_495ul_karavan_podlahove_topeni
+            name: Podlahové topení
+            icon: mdi:heating-coil
+          - entity: switch.hobby_495ul_karavan_bojler
+            name: Bojler
+            icon: mdi:water-boiler
+      - type: entities
+        title: Lednice (TEST – ověřit)
+        icon: mdi:fridge
+        entities:
+          - entity: switch.hobby_495ul_karavan_lednice
+            name: Lednice zap/vyp
+          - entity: select.hobby_495ul_karavan_lednice_rezim_test
+            name: Režim
+          - entity: number.hobby_495ul_karavan_lednice_teplota_test
+            name: Teplota (1–5)
+  - type: grid
+    cards:
+      - type: heading
+        heading: 📈 Vývoj (24 h)
+        heading_style: title
+      - type: history-graph
+        hours_to_show: 24
+        title: Teploty
+        entities:
+          - entity: sensor.hobby_495ul_karavan_teplota_vnitrni
+            name: Vnitřní
+          - entity: sensor.hobby_495ul_karavan_teplota_venkovni
+            name: Venkovní
+      - type: history-graph
+        hours_to_show: 24
+        title: Baterie
+        entities:
+          - entity: sensor.hobby_495ul_karavan_baterie_napeti
+            name: Napětí
+          - entity: sensor.hobby_495ul_karavan_baterie_nabiti
+            name: Nabití
+  - type: grid
+    cards:
+      - type: heading
+        heading: ❄️ Klimatizace Sinclair
+        heading_style: title
+        icon: mdi:air-conditioner
+      - type: thermostat
+        entity: climate.karavan_klimatizace
+      - type: entities
+        title: Diagnostika
+        icon: mdi:bug
+        entities:
+          - entity: text.hobby_495ul_karavan_raw_cmd
+            name: RAW příkaz (BLE)

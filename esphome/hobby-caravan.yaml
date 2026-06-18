@@ -1,0 +1,211 @@
+esphome:
+  name: hobby-caravan
+  friendly_name: hobby-caravan
+  min_version: 2026.4.0
+  name_add_mac_suffix: false
+
+esp32:
+  variant: esp32c3
+  framework:
+    type: esp-idf
+
+logger:
+  level: DEBUG
+
+api:
+
+ota:
+- platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+external_components:
+  - source:
+      type: local
+      path: my_components
+    components: [fendt_caravan]
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: true
+
+ble_client:
+  - mac_address: DE:00:32:00:61:44
+    id: hobby_ble
+    auto_connect: true
+
+fendt_caravan:
+  id: hobby_caravan_hub
+  ble_client_id: hobby_ble
+
+sensor:
+  - platform: fendt_caravan
+    parent_id: hobby_caravan_hub
+    type: mcu_device
+    id: hobby_unit
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: temp_in
+    name: "Karavan teplota vnitrni"
+    filters:
+      - throttle_average: 5s
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: temp_out
+    name: "Karavan teplota venkovni"
+    filters:
+      - throttle_average: 5s
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: batt_voltage
+    name: "Karavan baterie napeti"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: batt_current
+    name: "Karavan baterie proud"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: batt_soc
+    name: "Karavan baterie nabiti"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: batt_remaining
+    name: "Karavan baterie zbyva"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: batt_temp
+    name: "Karavan baterie teplota"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: water_level
+    name: "Karavan nadrz vody"
+
+switch:
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: main_switch
+    name: "Karavan hlavni vypinac"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: all_lights
+    name: "Karavan svetla (vse)"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: floor_heater
+    name: "Karavan podlahove topeni"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: kueche
+    name: "Karavan svetlo kuchyn"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: aussen
+    name: "Karavan svetlo venku"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: amb1
+    name: "Karavan ambient 1"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: amb2
+    name: "Karavan ambient 2"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: amb3
+    name: "Karavan ambient 3"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: fridge
+    name: "Karavan lednice"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: therme
+    name: "Karavan bojler"
+
+text_sensor:
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: power_status
+    name: "Karavan napajeni"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: software_version
+    name: "Karavan SW verze"
+
+output:
+  - platform: template
+    type: float
+    id: out_dim2
+    write_action:
+      - lambda: |-
+          int level = (int) (state * 15.0f + 0.5f);
+          char buf[28];
+          snprintf(buf, sizeof(buf), "net-LIGHT_DIM2-%d", level);
+          id(hobby_caravan_hub).on_command_send(std::string(buf));
+  - platform: template
+    type: float
+    id: out_dim3
+    write_action:
+      - lambda: |-
+          int level = (int) (state * 15.0f + 0.5f);
+          char buf[28];
+          snprintf(buf, sizeof(buf), "net-LIGHT_DIM3-%d", level);
+          id(hobby_caravan_hub).on_command_send(std::string(buf));
+
+light:
+  - platform: monochromatic
+    name: "Karavan svetlo obyvak"
+    output: out_dim2
+    gamma_correct: 1.0
+    default_transition_length: 0s
+  - platform: monochromatic
+    name: "Karavan ambient zadni okno"
+    output: out_dim3
+    gamma_correct: 1.0
+    default_transition_length: 0s
+
+select:
+  - platform: template
+    name: "Karavan lednice rezim TEST"
+    id: fridge_source_select
+    optimistic: true
+    options:
+      - "Vypnuto"
+      - "12V"
+      - "230V"
+      - "Plyn"
+    set_action:
+      - lambda: |-
+          auto idx = id(fridge_source_select).index_of(x);
+          int v = idx.has_value() ? (int) idx.value() : 0;
+          char buf[32];
+          snprintf(buf, sizeof(buf), "net-FRIDGE_SOURCE-%d", v);
+          id(hobby_caravan_hub).on_command_send(std::string(buf));
+
+number:
+  - platform: template
+    name: "Karavan lednice teplota TEST"
+    id: fridge_temp_number
+    optimistic: true
+    min_value: 1
+    max_value: 5
+    step: 1
+    mode: slider
+    set_action:
+      - lambda: |-
+          char buf[32];
+          snprintf(buf, sizeof(buf), "net-FRIDGE_TEMP-%d", (int) x);
+          id(hobby_caravan_hub).on_command_send(std::string(buf));
+
+text:
+  - platform: template
+    name: "Karavan RAW cmd"
+    id: karavan_raw_cmd
+    optimistic: true
+    min_length: 0
+    max_length: 80
+    mode: text
+    set_action:
+      - lambda: 'id(hobby_caravan_hub).on_command_send(x);'

@@ -1,0 +1,6 @@
+secrets.yaml
+**/__pycache__/
+*.pyc
+.esphome/
+.pioenvs/
+*.bak*

@@ -10,8 +10,7 @@ ESPHome komponentě [`fendt_caravan`](https://github.com/esphome/esphome/pull/13
 (PR #13327, autor *rawsludge*), kterou jsme **rozšířili** o plnou paritu s mobilní
 aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 
-> 🌍 Jazyky / Languages / Sprachen: **[Česky](README.md)** ·
-> [English](README.en.md) · [Deutsch](README.de.md)
+> 🌍 Jazyky: **Česky** (tento dokument) · English / Deutsch — 🚧 plánováno
 
 ---
 

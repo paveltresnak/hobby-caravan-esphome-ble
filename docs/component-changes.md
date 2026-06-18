@@ -35,6 +35,15 @@ lednice režim/teplota jako `select`/`number` — vše přes `id(hub).on_command
 Template `text` entita volající `on_command_send(x)` — pošle libovolný BLE příkaz
 z HA bez nového flashe (klíčové pro reverzní inženýrství WRITE formátů).
 
+## 7. Kompletní katalog protokolu (decode-only, se status anotací)
+`control_unit_device_sensor.cpp` má v `setup()` přes `ref()` zaregistrované **všechny
+potvrzené klíče** napříč výbavou — vč. Alde `HEATER_*`, Truma `AC_TRUMA_*`, Dometic
+`AC_DOM_FJ_*`, `ULTRAHEAT_*`, termostat `TH_*`/`TT_`, satelit `SAT_*`, doplňky
+baterie/lednice/světel. Bez HA entity (jen se dekódují → připraveny k navázání),
+komentované statusem: `[OK]` odzkoušeno (naše 495 UL) · `[?]` máme/neodzkoušeno ·
+`[--]` jiná výbava (nemáme; z dumpu/komunity). Z komponenty je tak nejúplnější
+referenční dekodér HobbyConnect — užitečné pro upstream i další karavany.
+
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje
 - stmívače (0–15): **`net-KEY-N`** (univerzální), `cmd-set` jen na DIM2

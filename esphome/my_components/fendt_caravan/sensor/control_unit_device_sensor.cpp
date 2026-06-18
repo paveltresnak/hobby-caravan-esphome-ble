@@ -115,6 +115,50 @@ void ControlUnitDeviceSensor::setup() {
   this->add_variable(batt_temp);
   auto *water_level = new Variable<float>("WATER_LEVEL", DeviceDecoders::decode_number);
   this->add_variable(water_level);
+
+  // ==========================================================================
+  // KOMPLETNI KATALOG PROTOKOLU HobbyConnect (reference, decode-only).
+  //   [OK] = odzkouseno na nasi Hobby 495 UL (ma HA entitu vyse)
+  //   [?]  = klic mame/ctemе, ale chovani/ovladani NEODZKOUSENO
+  //   [--] = jina vybava (Alde/Truma/Dometic/UltraHeat/SAT) - NEMAME (z dumpu/komunity)
+  // Klice nize nemaji HA entitu, jen se dekoduji (raw) -> pripraveny k navazani.
+  // ==========================================================================
+  auto ref = [this](const char *name) {
+    this->add_variable(new Variable<std::string>(name, DeviceDecoders::decode_str));
+  };
+  // --- System / identifikace [?] ---
+  ref("PANEL_VERSION"); ref("GSM_SIGNAL"); ref("VEHICLE_TYPE");
+  ref("LATITUDE"); ref("LONGITUDE"); ref("PI_PAIRING");
+  // --- Baterie IBS0_ doplnkove [?] ---
+  ref("IBS0_RECALIBRATED"); ref("IBS0_CAPACITY"); ref("IBS0_TYPE"); ref("IBS0_AVAILABLE");
+  // --- Voda [?] (stupnice neoverena) ---
+  ref("WATER_MEASUREMENT");
+  // --- Svetla nezapojena v 495 UL / readback stmivacu [?] ---
+  ref("LIGHT_DUSCHE"); ref("LIGHT_WASCH"); ref("LIGHT_KUECHE2");
+  ref("LIGHT_ZUSATZL"); ref("LIGHT_ZUSATZR");
+  ref("LIGHT_DIM0"); ref("LIGHT_DIM1"); ref("LIGHT_DIM2"); ref("LIGHT_DIM3"); ref("LIGHT_DIM4");
+  ref("LIGHT_BUSY");
+  // --- Lednice doplnkove [?] (ovladani neovereno) ---
+  ref("FRIDGE_AVAILABLE"); ref("FRIDGE_MODE"); ref("FRIDGE_SOURCE");
+  ref("FRIDGE_TEMP"); ref("FRIDGE_TYPE"); ref("FRIDGE_ERROR");
+  // --- Topeni Alde (HEATER_*) [--] NEMAME (manualni topeni) ---
+  ref("HEATER_AVAILABLE"); ref("HEATER_ONOFF"); ref("HEATER_TEMP");
+  ref("HEATER_WATER"); ref("HEATER_WATER_TEMP"); ref("HEATER_EL"); ref("HEATER_GAS");
+  // --- UltraHeat [--] NEMAME ---
+  ref("ULTRAHEAT_AVAILABLE"); ref("ULTRAHEAT_ONOFF"); ref("ULTRAHEAT_POWER"); ref("ULTRAHEAT_TEMP");
+  // --- Klima Dometic FreshJet (AC_DOM_FJ_*) [--] NEMAME ---
+  ref("AC_DOM_FJ_AVAILABLE"); ref("AC_DOM_FJ_ENABLE"); ref("AC_DOM_FJ_MODE");
+  ref("AC_DOM_FJ_TARGETTEMP"); ref("AC_DOM_FJ_FAN_SPEED");
+  // --- Klima Truma (AC_TRUMA_*) [--] NEMAME ---
+  ref("AC_TRUMA_AVAILABLE"); ref("AC_TRUMA_TYPE"); ref("AC_TRUMA_ENABLE");
+  ref("AC_TRUMA_TEMP"); ref("AC_TRUMA_MODE"); ref("AC_TRUMA_FAN_LEVEL");
+  ref("AC_TRUMA_LIGHT_ON_OFF"); ref("AC_TRUMA_LIGHT_DIMMER"); ref("AC_TRUMA_MM");
+  // --- Termostat topeni Truma/Alde (TH_*/TT_) [--] NEMAME (manualni topeni) ---
+  ref("TH_AVAILABLE"); ref("TT_AVAILABLE"); ref("TH_TYPE");
+  ref("TH_A_EN"); ref("TH_W_EN"); ref("TH_A_T"); ref("TH_W_T"); ref("TH_ES"); ref("TH_MM");
+  // --- Satelit (SAT_*) [--] NEMAME ---
+  ref("SAT_AVAILABLE"); ref("SAT_TYPE"); ref("SAT_STATUS"); ref("SAT_ADVANCED_STATUS");
+  ref("SAT_COMMAND"); ref("SAT_LAT"); ref("SAT_LON"); ref("SAT_ORBITAL_POSTION");
 }
 
 void ControlUnitDeviceSensor::dump_config() {

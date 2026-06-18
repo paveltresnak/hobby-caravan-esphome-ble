@@ -1,3 +1,12 @@
+This MIT license applies to the ORIGINAL content of this repository (documentation,
+Home Assistant dashboard, ESPHome device configuration).
+
+The bundled ESPHome component in `esphome/my_components/fendt_caravan/` is a derivative
+of ESPHome (https://github.com/esphome/esphome) and retains ESPHome's dual license
+(C++ files GPLv3, Python files MIT). See `esphome/my_components/fendt_caravan/NOTICE.md`.
+
+-------------------------------------------------------------------------------
+
 MIT License
 
 Copyright (c) 2026 Pavel Tresnak

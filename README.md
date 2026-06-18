@@ -62,9 +62,15 @@ Ukázkový dashboard (záložka „Karavan") je v [`ha/`](ha/), popis v
 
 ## 🙏 Poděkování
 
-- [@rawsludge](https://github.com/esphome) — původní komponenta `fendt_caravan` (ESPHome PR #13327).
-- Komunita HA vlákno *„Hobby Connect for Hobby Caravans"*.
+Projekt staví na práci dalších — díky:
+- **[@rawsludge](https://github.com/esphome/esphome/pull/13327)** (Ahmet) — původní ESPHome
+  komponenta `fendt_caravan` (PR #13327) a reverzní inženýrství protokolu Fendt/HobbyConnect.
+- **tomjeppis** — zalogování proměnných topení/Truma (`HEATER_*`, `AC_TRUMA_*`) přes nRF Connect.
+- HA community vlákno *„Hobby Connect for Hobby Caravans"* (#889146) a jeho přispěvatelé.
 
 ## 📄 Licence
 
-MIT (viz `LICENSE`).
+- **Náš původní obsah** (dokumentace, dashboard, konfigurace) — **MIT** (viz `LICENSE`).
+- **Komponenta `fendt_caravan`** je odvozená z ESPHome a zachovává jeho **duální licenci**
+  (C++ `GPLv3`, Python `MIT`) — viz
+  [`esphome/my_components/fendt_caravan/NOTICE.md`](esphome/my_components/fendt_caravan/NOTICE.md).

@@ -59,9 +59,15 @@ A sample dashboard (the "Karavan" tab) is in [`ha/`](ha/), described in
 
 ## 🙏 Credits
 
-- [@rawsludge](https://github.com/esphome) — original `fendt_caravan` component (ESPHome PR #13327).
-- The HA community thread *"Hobby Connect for Hobby Caravans"*.
+This project builds on the work of others — thanks to:
+- **[@rawsludge](https://github.com/esphome/esphome/pull/13327)** (Ahmet) — original ESPHome
+  `fendt_caravan` component (PR #13327) and reverse engineering of the Fendt/HobbyConnect protocol.
+- **tomjeppis** — logged the heating/Truma variables (`HEATER_*`, `AC_TRUMA_*`) via nRF Connect.
+- The HA community thread *"Hobby Connect for Hobby Caravans"* (#889146) and its contributors.
 
 ## 📄 License
 
-MIT (see `LICENSE`).
+- **Our original content** (docs, dashboard, configuration) — **MIT** (see `LICENSE`).
+- The **`fendt_caravan` component** is derived from ESPHome and retains its **dual license**
+  (C++ `GPLv3`, Python `MIT`) — see
+  [`esphome/my_components/fendt_caravan/NOTICE.md`](esphome/my_components/fendt_caravan/NOTICE.md).

@@ -10,7 +10,8 @@ ESPHome komponentě [`fendt_caravan`](https://github.com/esphome/esphome/pull/13
 (PR #13327, autor *rawsludge*), kterou jsme **rozšířili** o plnou paritu s mobilní
 aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 
-> 🌍 Jazyky: **Česky** (tento dokument) · English / Deutsch — 🚧 plánováno
+> 🌍 Jazyky / Languages / Sprachen: **Česky** (tento dokument) ·
+> [English](README.en.md) · [Deutsch](README.de.md)
 
 ---
 
@@ -44,6 +45,7 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
    pak už OTA: `esphome run esphome/hobby-caravan.yaml`.
 4. Rozšířená komponenta je lokálně v `esphome/my_components/fendt_caravan/`
    (viz `external_components: source: {type: local, path: my_components}`).
+   Co jsme změnili oproti PR #13327: [`docs/component-changes.md`](docs/component-changes.md).
 5. Návod krok za krokem: [`docs/flashing.md`](docs/flashing.md).
 
 ## 📡 BLE protokol

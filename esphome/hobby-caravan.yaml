@@ -167,6 +167,24 @@ output:
           char buf[28];
           snprintf(buf, sizeof(buf), "net-LIGHT_DIM3-%d", level);
           id(hobby_caravan_hub).on_command_send(std::string(buf));
+  - platform: template
+    type: float
+    id: out_dim0
+    write_action:
+      - lambda: |-
+          int level = (int) (state * 15.0f + 0.5f);
+          char buf[28];
+          snprintf(buf, sizeof(buf), "net-LIGHT_DIM0-%d", level);
+          id(hobby_caravan_hub).on_command_send(std::string(buf));
+  - platform: template
+    type: float
+    id: out_dim1
+    write_action:
+      - lambda: |-
+          int level = (int) (state * 15.0f + 0.5f);
+          char buf[28];
+          snprintf(buf, sizeof(buf), "net-LIGHT_DIM1-%d", level);
+          id(hobby_caravan_hub).on_command_send(std::string(buf));
 
 light:
   - platform: monochromatic
@@ -177,6 +195,16 @@ light:
   - platform: monochromatic
     name: "Karavan ambient zadni okno"
     output: out_dim3
+    gamma_correct: 1.0
+    default_transition_length: 0s
+  - platform: monochromatic
+    name: "Karavan postel vpravo"
+    output: out_dim0
+    gamma_correct: 1.0
+    default_transition_length: 0s
+  - platform: monochromatic
+    name: "Karavan postel vlevo"
+    output: out_dim1
     gamma_correct: 1.0
     default_transition_length: 0s
 

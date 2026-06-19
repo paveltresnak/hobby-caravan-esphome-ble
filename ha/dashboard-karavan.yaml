@@ -1,5 +1,5 @@
 # Záložka "Karavan" pro Home Assistant (sections, 3 vyvážené sloupce).
-# Vyžaduje HACS: apexcharts-card. Display precision senzorů v HA (viz docs/home-assistant.md).
+# Display precision senzorů: HA → entita → zobrazená přesnost (viz docs/home-assistant.md).
 type: sections
 max_columns: 3
 dense_section_placement: true
@@ -96,6 +96,18 @@ sections:
     - type: tile
       entity: light.hobby_495ul_karavan_ambient_zadni_okno
       name: Zadní okno
+      features:
+      - type: light-brightness
+  - type: horizontal-stack
+    cards:
+    - type: tile
+      entity: light.hobby_495ul_karavan_postel_vpravo
+      name: Postel vpravo
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: light.hobby_495ul_karavan_postel_vlevo
+      name: Postel vlevo
       features:
       - type: light-brightness
   - type: entities

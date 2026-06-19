@@ -35,6 +35,7 @@ class ControlUnitDeviceSensor : public CaravanDeviceComponent, public sensor::Se
   SUB_SWITCH(amb3);
   SUB_SWITCH(fridge);
   SUB_SWITCH(therme);
+  SUB_SWITCH(dusche);
   SUB_SENSOR(batt_voltage);
   SUB_SENSOR(batt_current);
   SUB_SENSOR(batt_soc);

@@ -36,6 +36,7 @@ CONFIG_SCHEMA = cv.typed_schema(
         "amb3": _switch_schema(icon="mdi:lightbulb", key_name_="LIGHT_AMB3"),
         "fridge": _switch_schema(icon="mdi:fridge", key_name_="FRIDGE_ON_OFF"),
         "therme": _switch_schema(icon="mdi:water-boiler", key_name_="THERME_ON"),
+        "dusche": _switch_schema(icon="mdi:shower", key_name_="LIGHT_DUSCHE"),
     }
 )
 

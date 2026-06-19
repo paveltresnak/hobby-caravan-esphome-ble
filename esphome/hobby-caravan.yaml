@@ -137,6 +137,10 @@ switch:
     parent_id: hobby_unit
     type: therme
     name: "Karavan bojler"
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: dusche
+    name: "Karavan svetlo koupelna"
 
 text_sensor:
   - platform: fendt_caravan

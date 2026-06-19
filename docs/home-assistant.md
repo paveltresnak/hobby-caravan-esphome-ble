@@ -17,7 +17,7 @@ Po nahrání firmwaru se ESP32-C3 objeví v HA jako **ESPHome** integrace
 ### Ovládání
 | Entita | Příkaz BLE |
 |--------|-----------|
-| `switch.…_svetlo_kuchyn` / `_svetlo_venku` / `_ambient_1..3` | `cmd-tgl:LIGHT_*` |
+| `switch.…_svetlo_kuchyn` / `_svetlo_koupelna` / `_svetlo_venku` / `_ambient_1..3` | `cmd-tgl:LIGHT_*` |
 | `light.…_svetlo_obyvak` / `_ambient_zadni_okno` / `_postel_vpravo` / `_postel_vlevo` (s jasem) | `net-LIGHT_DIM2/3/0/1-N` |
 | `switch.…_hlavni_vypinac` / `_svetla_vse` | centrální (`HS_KEY*`) |
 | `switch.…_podlahove_topeni` / `_bojler` | `cmd-tgl:FLOOR_HEATER_ON` / `THERME_ON` |

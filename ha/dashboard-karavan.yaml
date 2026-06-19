@@ -78,14 +78,16 @@ sections:
     entities:
     - entity: switch.hobby_495ul_karavan_svetlo_kuchyn
       name: Kuchyň
+    - entity: switch.hobby_495ul_karavan_svetlo_koupelna
+      name: Koupelna
     - entity: switch.hobby_495ul_karavan_svetlo_venku
       name: Venku
     - entity: switch.hobby_495ul_karavan_ambient_1
-      name: Ambient 1
+      name: Ambient ložnice
     - entity: switch.hobby_495ul_karavan_ambient_2
-      name: Ambient 2
+      name: Ambient obývák
     - entity: switch.hobby_495ul_karavan_ambient_3
-      name: Ambient 3
+      name: Hlavní světlo
   - type: horizontal-stack
     cards:
     - type: tile

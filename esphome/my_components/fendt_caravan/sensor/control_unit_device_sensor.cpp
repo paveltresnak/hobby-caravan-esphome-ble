@@ -99,6 +99,8 @@ void ControlUnitDeviceSensor::setup() {
   this->add_variable(light_amb2);
   auto *light_amb3 = new Variable<bool>("LIGHT_AMB3", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
   this->add_variable(light_amb3);
+  auto *light_dusche = new Variable<bool>("LIGHT_DUSCHE", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
+  this->add_variable(light_dusche);
   auto *fridge_on = new Variable<bool>("FRIDGE_ON_OFF", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
   this->add_variable(fridge_on);
   auto *therme_on = new Variable<bool>("THERME_ON", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
@@ -134,7 +136,8 @@ void ControlUnitDeviceSensor::setup() {
   // --- Voda [?] (stupnice neoverena) ---
   ref("WATER_MEASUREMENT");
   // --- Svetla nezapojena v 495 UL / readback stmivacu [?] ---
-  ref("LIGHT_DUSCHE"); ref("LIGHT_WASCH"); ref("LIGHT_KUECHE2");
+  // (LIGHT_DUSCHE = koupelna -> ma vlastni switch entitu vyse, neni v ref katalogu)
+  ref("LIGHT_WASCH"); ref("LIGHT_KUECHE2");
   ref("LIGHT_ZUSATZL"); ref("LIGHT_ZUSATZR");
   ref("LIGHT_DIM0"); ref("LIGHT_DIM1"); ref("LIGHT_DIM2"); ref("LIGHT_DIM3"); ref("LIGHT_DIM4");
   ref("LIGHT_BUSY");
@@ -170,6 +173,7 @@ void ControlUnitDeviceSensor::dump_config() {
   LOG_TEXT_SENSOR(TAG, "  Power Status", this->power_status_text_sensor_);
   LOG_TEXT_SENSOR(TAG, "  Software Version", this->software_version_text_sensor_);
   LOG_SWITCH(TAG, "  Floor Heater", this->floor_heater_switch_);
+  LOG_SWITCH(TAG, "  Koupelna", this->dusche_switch_);
 }
 
 void ControlUnitDeviceSensor::on_data_decoded(IVariable *variable) {

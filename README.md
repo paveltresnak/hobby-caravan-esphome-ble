@@ -11,6 +11,8 @@ Jde o **integraci do Home Assistant přes Wi-Fi a Bluetooth LE prostřednictvím
 Karavan (panel HobbyConnect)  ──BLE──►  ESP32-C3  ──Wi-Fi──►  Home Assistant
 ```
 
+![Dashboard „Karavan" v Home Assistantu](docs/img/dashboard.png)
+
 Stejný HobbyConnect modul používají i karavany **Fendt**, takže projekt staví na
 ESPHome komponentě [`fendt_caravan`](https://github.com/esphome/esphome/pull/13327)
 (PR #13327, autor *rawsludge*), kterou jsme **rozšířili** o plnou paritu s mobilní

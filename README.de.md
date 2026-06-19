@@ -31,7 +31,7 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 | 🎚️ Dimmer | Wohnraum, Ambiente Heckfenster (0–15) | ✅ Steuerung |
 | 🔆 Zentral | Hauptschalter, alle Lichter | ✅ Steuerung + Status |
 | 🔥 Heizung | Boiler (Fußbodenheizung je nach Modell) | ✅ Steuerung + Status |
-| 🧊 Kühlschrank | Ein/Aus · Quelle (12V/230V/Gas) · Temperatur | 🧪 Steuerung (Format zu prüfen) |
+| 🧊 Kühlschrank | Ein/Aus · Quelle (Auto/Gas/12V/230V) · Temperatur (1–5) | ✅ Steuerung |
 | 🔌 Stromversorgung | 230 V verbunden, Firmware-Version | ✅ lesen |
 | 💧 Frischwassertank | `WATER_LEVEL` | ⏳ Skala offen (beim Befüllen erfassen) |
 

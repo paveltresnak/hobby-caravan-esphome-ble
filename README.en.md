@@ -30,7 +30,7 @@ mobile app and added **control (WRITE) commands**.
 | 🎚️ Dimmers | living room, rear-window ambient (0–15) | ✅ control |
 | 🔆 Central | master switch, all lights | ✅ control + state |
 | 🔥 Heating | boiler (floor heating optional per model) | ✅ control + state |
-| 🧊 Fridge | on/off · source (12V/230V/gas) · temperature | 🧪 control (format to verify) |
+| 🧊 Fridge | on/off · source (Auto/Gas/12V/230V) · temperature (1–5) | ✅ control |
 | 🔌 Power | 230 V connected, firmware version | ✅ read |
 | 💧 Fresh water tank | `WATER_LEVEL` | ⏳ scale TBD (capture while filling) |
 

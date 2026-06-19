@@ -32,7 +32,7 @@ esp32_ble_tracker:
     active: true
 
 ble_client:
-  - mac_address: XX:XX:XX:XX:XX:XX  # <-- nahrad MAC sveho panelu (sken: ESPHome log / nRF Connect)
+  - mac_address: DE:00:32:00:61:44
     id: hobby_ble
     auto_connect: true
 
@@ -182,14 +182,14 @@ light:
 
 select:
   - platform: template
-    name: "Karavan lednice rezim TEST"
+    name: "Karavan lednice rezim"
     id: fridge_source_select
     optimistic: true
     options:
-      - "Vypnuto"
+      - "Auto"
+      - "Plyn"
       - "12V"
       - "230V"
-      - "Plyn"
     set_action:
       - lambda: |-
           auto idx = id(fridge_source_select).index_of(x);
@@ -200,7 +200,7 @@ select:
 
 number:
   - platform: template
-    name: "Karavan lednice teplota TEST"
+    name: "Karavan lednice teplota"
     id: fridge_temp_number
     optimistic: true
     min_value: 1

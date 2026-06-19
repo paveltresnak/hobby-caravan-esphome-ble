@@ -31,7 +31,7 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 | 🎚️ Stmívače | obývák, ambient zadní okno (jas 0–15) | ✅ ovládání |
 | 🔆 Centrální | hlavní vypínač, všechna světla | ✅ ovládání + stav |
 | 🔥 Topení | podlahové topení, bojler | ✅ ovládání + stav |
-| 🧊 Lednice | zap/vyp · režim (12V/230V/plyn) · teplota | 🧪 ovládání (formát ověřit) |
+| 🧊 Lednice | zap/vyp · zdroj (Auto/Plyn/12V/230V) · teplota (1–5) | ✅ ovládání |
 | 🔌 Napájení | 230 V připojeno, verze SW | ✅ čtení |
 | 💧 Nádrž vody | — | ⏳ čeká na zachycení při napouštění |
 

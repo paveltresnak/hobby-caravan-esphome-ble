@@ -21,7 +21,7 @@ Po nahrání firmwaru se ESP32-C3 objeví v HA jako **ESPHome** integrace
 | `light.…_svetlo_obyvak` / `_ambient_zadni_okno` (s jasem) | `net-LIGHT_DIM2/3-N` |
 | `switch.…_hlavni_vypinac` / `_svetla_vse` | centrální (`HS_KEY*`) |
 | `switch.…_podlahove_topeni` / `_bojler` | `cmd-tgl:FLOOR_HEATER_ON` / `THERME_ON` |
-| `switch.…_lednice` + `select.…_lednice_rezim` + `number.…_lednice_teplota` | `cmd-tgl`/`net-FRIDGE_*` (🧪 ověřit) |
+| `switch.…_lednice` + `select.…_lednice_rezim` (Auto/Plyn/12V/230V) + `number.…_lednice_teplota` (1–5) | `cmd-tgl:FRIDGE_ON_OFF` / `net-FRIDGE_SOURCE-N` / `net-FRIDGE_TEMP-N` ✅ ověřeno (Dometic 10) |
 | `text.…_raw_cmd` | **diagnostika** — pošle libovolný BLE příkaz |
 
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje

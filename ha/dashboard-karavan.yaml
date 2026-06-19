@@ -1,5 +1,5 @@
 # Záložka "Karavan" pro Home Assistant (sections, 3 vyvážené sloupce).
-# Display precision senzorů: HA → entita → zobrazená přesnost (viz docs/home-assistant.md).
+# Vyžaduje HACS: apexcharts-card. Display precision senzorů v HA (viz docs/home-assistant.md).
 type: sections
 max_columns: 3
 dense_section_placement: true
@@ -117,14 +117,14 @@ sections:
     heading: 🧊 Lednice & ❄️ klima
     icon: mdi:fridge
   - type: entities
-    title: Lednice (TEST – ověřit)
+    title: Lednice
     show_header_toggle: false
     entities:
     - entity: switch.hobby_495ul_karavan_lednice
       name: Lednice zap/vyp
-    - entity: select.hobby_495ul_karavan_lednice_rezim_test
+    - entity: select.hobby_495ul_karavan_lednice_rezim
       name: Režim
-    - entity: number.hobby_495ul_karavan_lednice_teplota_test
+    - entity: number.hobby_495ul_karavan_lednice_teplota
       name: Teplota (1–5)
   - type: tile
     entity: climate.karavan_klimatizace

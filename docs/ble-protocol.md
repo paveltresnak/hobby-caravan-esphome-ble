@@ -81,7 +81,7 @@ nedekódovalo. **Nikde jinde na netu nepopsáno.**
 | `WATER_LEVEL` | hladina pitné vody | `0` (nádrž prázdná) |
 | `WATER_MEASUREMENT` | měření / surová hodnota | `0` |
 
-Stupnice zatím neznámá (nádrž byla prázdná; kapacita **25 l** dle faktury) — **ověřit rozsah při napouštění**.
+Stupnice zatím neznámá (nádrž byla prázdná; kapacita **120 l** — zvětšeno z originálních 25 l) — **ověřit rozsah při napouštění**.
 
 > 📚 Úplný výpis **všech** klíčů jednotky (vč. nepoužitých v 495 UL) je v
 > [`protocol-keys-full.md`](protocol-keys-full.md).

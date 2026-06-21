@@ -1,7 +1,10 @@
 # 📡 BLE protokol HobbyConnect — reverzní inženýrství
 
-Zachyceno z reálného provozu karavanu **Hobby De Luxe 495 UL** (panel *HobbyConnect /
-Hobby BT Masterpanel MoCa 6121980022*, čip BLUENRG-M0L). Stejný modul je i ve Fendt.
+Zachyceno z reálného provozu karavanu **Hobby De Luxe 495 UL** (panel **HobbyConnect**,
+BLE se hlásí jako `HobbyConnect Data`). Kompatibilní i s Fendt (sdílí komponentu `fendt_caravan`).
+**Panel je brána z interní karavanové sběrnice `CI-Bus` (dle Hobby manuálu 2023) na BLE** —
+světla řídí `Lichtsteuermodul` na CI-Busu, panel/HobbyConnect to mostí do appky/našeho ESP.
+Pozn.: konkrétní výrobní číslo panelu / LED driveru ani typ BLE čipu neuvádíme — nebyly ověřeny.
 
 ## Připojení
 

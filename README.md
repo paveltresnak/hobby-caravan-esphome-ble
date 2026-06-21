@@ -1,7 +1,7 @@
 # 🚐 Hobby karavan → Home Assistant (ESP32-C3 / ESPHome / BLE)
 
 Most mezi obytným přívěsem **Hobby De Luxe 495 UL** (ovládací panel *HobbyConnect /
-Hobby BT Masterpanel*) a **Home Assistant** přes levný **ESP32-C3**, který se přes
+HobbyConnect*) a **Home Assistant** přes levný **ESP32-C3**, který se přes
 **Bluetooth LE** připojí na řídicí jednotku karavanu a vystaví její data i ovládání
 jako nativní entity HA — světla, stmívače, lednici, topení, bojler, baterii a teploty.
 
@@ -49,7 +49,7 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 ## 🧰 Hardware
 
 - **ESP32-C3** (SuperMini) — pozor, jen **2,4 GHz Wi-Fi** (5 GHz se nepřipojí).
-- Karavan **Hobby De Luxe 495 UL** s panelem *HobbyConnect / Hobby BT Masterpanel*.
+- Karavan **Hobby De Luxe 495 UL** s panelem *HobbyConnect*.
 - BLE zařízení `HobbyConnect Data`, MAC `XX:XX:XX:XX:XX:XX` (najdi si svůj skenem).
 - Podrobnosti: [`docs/hardware.md`](docs/hardware.md).
 

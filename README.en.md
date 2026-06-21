@@ -1,7 +1,7 @@
 # 🚐 Hobby caravan → Home Assistant (ESP32-C3 / ESPHome / BLE)
 
 A bridge between the **Hobby De Luxe 495 UL** caravan (control panel *HobbyConnect /
-Hobby BT Masterpanel*) and **Home Assistant**, using a cheap **ESP32-C3** that connects
+HobbyConnect*) and **Home Assistant**, using a cheap **ESP32-C3** that connects
 to the caravan's control unit over **Bluetooth LE** and exposes its data and controls
 as native HA entities — lights, dimmers, fridge, heating, boiler, battery and temperatures.
 
@@ -48,7 +48,7 @@ mobile app and added **control (WRITE) commands**.
 ## 🧰 Hardware
 
 - **ESP32-C3** (SuperMini) — note: **2.4 GHz Wi-Fi only** (5 GHz won't connect).
-- Caravan **Hobby De Luxe 495 UL** with *HobbyConnect / Hobby BT Masterpanel*.
+- Caravan **Hobby De Luxe 495 UL** with *HobbyConnect*.
 - BLE device `HobbyConnect Data`, MAC `XX:XX:XX:XX:XX:XX` (find yours via a scan).
 - Details: [`docs/hardware.md`](docs/hardware.md).
 

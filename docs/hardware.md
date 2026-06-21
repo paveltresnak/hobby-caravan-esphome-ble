@@ -7,11 +7,26 @@
   step-down na 5 V. Hlídej stabilní napájení — při podpětí hrozí boot-loop
   (viz „Boot crash" ve [flashing.md](flashing.md)).
 
-## Karavan / panel
-- **Hobby De Luxe 495 UL** (sezóna 2023) s ovládacím panelem
-  **HobbyConnect / Hobby BT Masterpanel MoCa 6121980022**, čip **BLUENRG-M0L**.
-- Panel poskytuje **Bluetooth LE** rozhraní (stejné jako mobilní appka HobbyConnect).
-- Stejný modul mají i karavany **Fendt** → komponenta je přenositelná.
+## Karavan / panel / sběrnice
+- **Hobby De Luxe 495 UL** (sezóna 2023). Výbava potvrzená fakturou (schaffer-mobil/Verendus):
+  **HOBBY CONNECT** — „*Steuerung für Bordtechnik über Hobby-Bedienpanel und Bluetooth per App*"
+  + „*Bedienpanel für Beleuchtungssystem und Tankanzeige*".
+
+### Architektura (dle oficiálního Hobby manuálu 2023, kap. 7 Elektroinstallationen)
+- Komponenty (světla, lednice, klima, topení, nabíječ, IBS) jsou propojené přes
+  **CI-Bus** — oborová karavanová sběrnice (běžně CAN-based; používá ji víc výrobců).
+  Manuál: „*HobbyConnect … die meisten CI-Bus-fähigen Komponenten … bedienen*" (s.68).
+- Světla řídí **Lichtsteuermodul** (modul řízení světel + pojistky vnitřních okruhů),
+  uzel na CI-Busu (Kontaktplan Lichtsteuersystem, s.93/97 — svorka „CI-Bus").
+- **HobbyConnect = brána CI-Bus ↔ Bluetooth LE + appka.** Náš kus má variantu **bez „+"**
+  (jen BT). „HobbyConnect+" = Connect+-Box se SIM = vzdálené ovládání přes mobilní síť.
+  → **Náš ESP32-C3 supluje funkci HobbyConnect+ (vzdálený přístup) zadarmo přes HA/WiFi.**
+
+### BLE rozhraní panelu (zachyceno z provozu)
+- Hlásí se jako `HobbyConnect Data`; Service UUID `C7841029-FE7C-4894-8532-F97908EF1AE4`,
+  charakteristika `0x0001` (NOTIFY+WRITE). Kompatibilní i s **Fendt** (sdílí `fendt_caravan`).
+- ⚠️ Konkrétní výrobní číslo Lichtsteuermodulu / LED driveru ani typ BLE čipu **manuál
+  ani faktura neuvádí** (OEM díly) — zjistitelné jen rozebráním. Dřívější doc měla smyšlené údaje.
 
 ## Ověřená výbava (dle dodací faktury, Hobby 495 UL, model 2023)
 Co v tomto konkrétním kuse reálně je a jak to mapuje na entity:

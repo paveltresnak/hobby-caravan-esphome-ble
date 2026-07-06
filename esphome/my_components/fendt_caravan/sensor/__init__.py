@@ -142,6 +142,18 @@ CONFIG_SCHEMA = cv.typed_schema(
             state_class=STATE_CLASS_MEASUREMENT,
             key_name_="WATER_LEVEL",
         ),
+        "fridge_temp": _sensor_schema(
+            FendtSensor,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            key_name_="FRIDGE_TEMP",
+        ),
+        "fridge_source": _sensor_schema(
+            FendtSensor,
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            key_name_="FRIDGE_SOURCE",
+        ),
     }
 )
 

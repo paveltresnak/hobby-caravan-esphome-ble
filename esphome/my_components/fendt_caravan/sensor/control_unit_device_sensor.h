@@ -42,6 +42,8 @@ class ControlUnitDeviceSensor : public CaravanDeviceComponent, public sensor::Se
   SUB_SENSOR(batt_remaining);
   SUB_SENSOR(batt_temp);
   SUB_SENSOR(water_level);
+  SUB_SENSOR(fridge_temp);
+  SUB_SENSOR(fridge_source);
 
  protected:
   void on_data_decoded(IVariable *variable) override;

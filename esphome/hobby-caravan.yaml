@@ -93,8 +93,27 @@ sensor:
     parent_id: hobby_unit
     type: water_level
     name: "Karavan nadrz vody"
+    unit_of_measurement: "%"
+    icon: "mdi:water-percent"
     filters:
-      - round: 0
+      - multiply: 25
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: fridge_temp
+    id: fridge_temp_state
+    internal: true
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: fridge_source
+    id: fridge_source_state
+    internal: true
+
+# Auto-refresh (experiment 2026-07-01): periodicky re-request vsech promennych z jednotky
+# -> overuji, zda WATER_LEVEL (a dalsi) prijdou cerstve bez fyzickeho sahnuti na panel
+interval:
+  - interval: 10min
+    then:
+      - lambda: 'id(hobby_caravan_hub).on_command_send("net-BT_VARS");'
 
 switch:
   - platform: fendt_caravan
@@ -216,12 +235,18 @@ select:
   - platform: template
     name: "Karavan lednice rezim"
     id: fridge_source_select
-    optimistic: true
     options:
       - "Auto"
       - "Plyn"
       - "12V"
       - "230V"
+    update_interval: 15s
+    lambda: |-
+      if (!id(fridge_source_state).has_state()) return {};
+      int i = (int) id(fridge_source_state).state;
+      const char *opts[] = {"Auto", "Plyn", "12V", "230V"};
+      if (i >= 0 && i < 4) return std::string(opts[i]);
+      return {};
     set_action:
       - lambda: |-
           auto idx = id(fridge_source_select).index_of(x);
@@ -234,11 +259,14 @@ number:
   - platform: template
     name: "Karavan lednice teplota"
     id: fridge_temp_number
-    optimistic: true
     min_value: 1
     max_value: 5
     step: 1
     mode: slider
+    update_interval: 15s
+    lambda: |-
+      if (id(fridge_temp_state).has_state()) return id(fridge_temp_state).state;
+      return {};
     set_action:
       - lambda: |-
           char buf[32];

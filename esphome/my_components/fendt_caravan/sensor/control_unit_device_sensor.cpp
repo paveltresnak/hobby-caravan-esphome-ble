@@ -117,6 +117,10 @@ void ControlUnitDeviceSensor::setup() {
   this->add_variable(batt_temp);
   auto *water_level = new Variable<float>("WATER_LEVEL", DeviceDecoders::decode_number);
   this->add_variable(water_level);
+  auto *fridge_temp = new Variable<float>("FRIDGE_TEMP", DeviceDecoders::decode_number);
+  this->add_variable(fridge_temp);
+  auto *fridge_source = new Variable<float>("FRIDGE_SOURCE", DeviceDecoders::decode_number);
+  this->add_variable(fridge_source);
 
   // ==========================================================================
   // KOMPLETNI KATALOG PROTOKOLU HobbyConnect (reference, decode-only).
@@ -142,8 +146,8 @@ void ControlUnitDeviceSensor::setup() {
   ref("LIGHT_DIM0"); ref("LIGHT_DIM1"); ref("LIGHT_DIM2"); ref("LIGHT_DIM3"); ref("LIGHT_DIM4");
   ref("LIGHT_BUSY");
   // --- Lednice doplnkove [?] (ovladani neovereno) ---
-  ref("FRIDGE_AVAILABLE"); ref("FRIDGE_MODE"); ref("FRIDGE_SOURCE");
-  ref("FRIDGE_TEMP"); ref("FRIDGE_TYPE"); ref("FRIDGE_ERROR");
+  ref("FRIDGE_AVAILABLE"); ref("FRIDGE_MODE");
+  ref("FRIDGE_TYPE"); ref("FRIDGE_ERROR");
   // --- Topeni Alde (HEATER_*) [--] NEMAME (manualni topeni) ---
   ref("HEATER_AVAILABLE"); ref("HEATER_ONOFF"); ref("HEATER_TEMP");
   ref("HEATER_WATER"); ref("HEATER_WATER_TEMP"); ref("HEATER_EL"); ref("HEATER_GAS");

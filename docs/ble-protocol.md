@@ -67,8 +67,14 @@ Delší zprávy jsou **chunkované po 17 bajtech** s koncovým `@` (most je skl�
 | Klíč | Význam |
 |------|--------|
 | `FRIDGE_ON_OFF` | zap/vyp (0/1) — WRITE `cmd-tgl:FRIDGE_ON_OFF` |
-| `FRIDGE_SOURCE` | zdroj **0=Auto / 1=Plyn / 2=12V / 3=230V** — WRITE `net-FRIDGE_SOURCE-N` |
-| `FRIDGE_TEMP` | stupeň **1–5** (5=max chlazení, NE °C) — WRITE `net-FRIDGE_TEMP-N` |
+| `FRIDGE_SOURCE` | zdroj **0=Auto / 1=Plyn / 2=12V / 3=230V** — WRITE `net-FRIDGE_SOURCE-N`; **✅ i ČTENÍ** (2026-07-02) |
+| `FRIDGE_TEMP` | stupeň **1–5** (5=max chlazení, NE °C) — WRITE `net-FRIDGE_TEMP-N`; **✅ i ČTENÍ** (2026-07-02) |
+
+> ⚠️ **Oprava 2026-07-02 — číst skutečný stav lednice, ne jen zapisovat:** `FRIDGE_TEMP` a `FRIDGE_SOURCE`
+> byly v komponentě jen decode-only `ref()` a HA `number`/`select` byly **`optimistic: true`** = jen zápis
+> → ukazovaly poslední hodnotu nastavenou z HA, NE realitu (změna na panelu se neprojevila; ukazovalo 1 místo 4).
+> Fix: přesun na plné `Variable<float>` (jako `WATER_LEVEL`) + interní senzory `fridge_temp_state`/`fridge_source_state`,
+> `number`/`select` přepnuty z optimistic na **čtení přes `lambda`** (poll 15s) + ponechán zápis. Ověřeno: number teď ukazuje 4.
 | `FRIDGE_MODE` | režim (auto/manual?) |
 | `FRIDGE_TYPE` / `FRIDGE_AVAILABLE` / `FRIDGE_ERROR` | typ / dostupnost / chyba |
 
@@ -98,13 +104,20 @@ nedekódovalo. **Nikde jinde na netu nepopsáno.**
 > (`IBS0_UBAT:  0,0 V`, `  0%`, `   0,0 h`). Dekodér `decode_number` to zvládá
 > (`stof` přeskočí mezery a ignoruje jednotku).
 
-### 💧 Nádrž vody — ✅ ZACHYCENO (BT_START dump 2026-06-18)
-| Klíč | Význam | Příklad |
+### 💧 Nádrž vody — ✅ ŠKÁLA OVĚŘENA při napouštění (2026-07-01)
+| Klíč | Význam | Hodnoty |
 |------|--------|---------|
-| `WATER_LEVEL` | hladina pitné vody | `0` (nádrž prázdná) |
-| `WATER_MEASUREMENT` | měření / surová hodnota | `0` |
+| `WATER_LEVEL` | hladina pitné vody (**diskrétní 0–4**) | `0` = prázdná · **`1`=25 % · `2`=50 % · `3`=75 % · `4`=100 %** |
+| `WATER_MEASUREMENT` | měření / surová hodnota (jen dekódováno, neexponováno) | — |
 
-Stupnice zatím neznámá (nádrž byla prázdná; kapacita **120 l** — zvětšeno z originálních 25 l) — **ověřit rozsah při napouštění**.
+Kapacita **120 l** (zvětšeno z orig. 25 l). Škála je hrubá (4 stupně po 25 %), ne litry.
+
+> ⚠️ **MĚŘENÍ JE ON-DEMAND (klíčové!):** panel změří hladinu **jen když se zobrazí obrazovka vody**
+> (fyzicky sáhneš na panel). Komponenta `fendt_caravan` je **pasivní posluchač** — na connect pošle
+> `net-BT_ID` + `net-BT_VARS` a pak už jen přijímá; **žádný periodický poll**. Proto se `WATER_LEVEL`
+> v HA aktualizuje jen ve chvíli, kdy panel aktivně změří (potvrzeno: `last_updated` sedí na stisk
+> tlačítka). Pro auto-refresh by šlo zkusit periodicky re-poslat `net-BT_VARS` (ověřit, zda donutí
+> čerstvé měření) + volitelně HA tlačítko „změřit vodu".
 
 > 📚 Úplný výpis **všech** klíčů jednotky (vč. nepoužitých v 495 UL) je v
 > [`protocol-keys-full.md`](protocol-keys-full.md).

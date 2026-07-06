@@ -6,9 +6,31 @@ dense_section_placement: true
 title: Karavan
 path: karavan
 icon: mdi:rv-truck
+# Badge se stavem BLE spojení (device_class connectivity) – vždy nahoře view.
+badges:
+- type: entity
+  entity: binary_sensor.hobby_495ul_karavan_spojeni
+  name: Karavan BLE
+  show_state: true
 sections:
 - type: grid
   cards:
+  # Upozornění se zobrazí JEN když je karavan mimo dosah (BLE odpojeno).
+  - type: conditional
+    conditions:
+    - condition: state
+      entity: binary_sensor.hobby_495ul_karavan_spojeni
+      state: 'off'
+    card:
+      type: markdown
+      content: >-
+        ## 🚐 Karavan není v dosahu
+
+
+        BLE spojení je ztraceno – **poslední hodnoty nemusí platit a ovládání
+        je nedostupné.**
+    grid_options:
+      columns: full
   - type: heading
     heading: 🚐 Stav & baterie
     icon: mdi:rv-truck

@@ -27,6 +27,27 @@ Po nahrání firmwaru se ESP32-C3 objeví v HA jako **ESPHome** integrace
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje
 > na 0–15 panelu. Po restartu ESP se stav světel může lišit, než přijde první notify.
 
+## Dostupnost & „mimo dosah"
+`binary_sensor.…_spojeni` (**device_class `connectivity`**) ukazuje **pravdivý stav
+BLE spojení** ESP ↔ HobbyConnect. ⚠️ Nezaměňovat se `sensor.…_napajeni`, což je
+`LINE_EN` = **230 V síť**, nikoli stav spojení!
+
+Když karavan **není v dosahu** (BLE odpojeno déle než 20 s — debounce `delayed_off`):
+- `binary_sensor.…_spojeni` → **Disconnected**;
+- měřené senzory (teploty, baterie, voda) → **Unavailable** (ESP na `on_disconnect`
+  publikuje `NaN`), `napajeni` se vyprázdní → v HA není vidět zastaralá „poslední"
+  hodnota;
+- ovládací entity sice v UI zůstanou, ale **příkazy se zahodí** (komponenta zapisuje
+  jen ve stavu `ESTABLISHED`);
+- dashboard ukáže **badge „Karavan BLE"** + podmíněnou kartu *„Karavan není v dosahu…"*.
+
+Po návratu do dosahu se vše **doplní automaticky** (jednotka po připojení vysype
+všechny klíče; `on_connect` navíc vyžádá `net-BT_VARS`).
+
+> Řešeno čistě standardními prostředky ESPHome/HA: template `binary_sensor` řízený
+> `ble_client` triggery `on_connect`/`on_disconnect`, `delayed_off` debounce, publikace
+> `NaN` → *Unavailable*, a Lovelace *conditional* karta.
+
 ## Přesnost zobrazení (display precision)
 ESP posílá floaty (např. 13,90 V je v 32bit floatu `13.8999996…`). **Zobrazenou
 přesnost** řídí HA — buď `accuracy_decimals` v ESPHome (→ *suggested display
@@ -50,6 +71,7 @@ Ukázková záložka **„Karavan"** (styl *sections*) je v
 [`../ha/dashboard-karavan.yaml`](../ha/dashboard-karavan.yaml). Lze ji vložit přes
 *Upravit dashboard → Raw konfigurace* jako nový view, nebo jednotlivé karty.
 
-Obsahuje: stav (klima/napájení/baterie/voda), světla (spínaná + stmívače + centrální),
+Obsahuje: **badge se stavem BLE spojení** + podmíněné upozornění „mimo dosah",
+stav (klima/napájení/baterie/voda), světla (spínaná + stmívače + centrální),
 topení & lednici, grafy teplot a baterie, a termostat klimatizace Sinclair
 (`climate.karavan_klimatizace`, řešeno mimo BLE přes Gree/Wi-Fi).

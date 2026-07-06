@@ -35,6 +35,16 @@ ble_client:
   - mac_address: DE:00:32:00:61:44
     id: hobby_ble
     auto_connect: true
+    on_connect:
+      then:
+        - binary_sensor.template.publish:
+            id: karavan_ble_conn
+            state: true
+    on_disconnect:
+      then:
+        - binary_sensor.template.publish:
+            id: karavan_ble_conn
+            state: false
 
 fendt_caravan:
   id: hobby_caravan_hub
@@ -48,6 +58,7 @@ sensor:
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: temp_in
+    id: sens_temp_in
     name: "Karavan teplota vnitrni"
     filters:
       - throttle_average: 5s
@@ -55,6 +66,7 @@ sensor:
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: temp_out
+    id: sens_temp_out
     name: "Karavan teplota venkovni"
     filters:
       - throttle_average: 5s
@@ -62,36 +74,42 @@ sensor:
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_voltage
+    id: sens_batt_voltage
     name: "Karavan baterie napeti"
     filters:
       - round: 2
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_current
+    id: sens_batt_current
     name: "Karavan baterie proud"
     filters:
       - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_soc
+    id: sens_batt_soc
     name: "Karavan baterie nabiti"
     filters:
       - round: 0
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_remaining
+    id: sens_batt_remaining
     name: "Karavan baterie zbyva"
     filters:
       - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: batt_temp
+    id: sens_batt_temp
     name: "Karavan baterie teplota"
     filters:
       - round: 1
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: water_level
+    id: sens_water
     name: "Karavan nadrz vody"
     unit_of_measurement: "%"
     icon: "mdi:water-percent"
@@ -114,6 +132,38 @@ interval:
   - interval: 10min
     then:
       - lambda: 'id(hobby_caravan_hub).on_command_send("net-BT_VARS");'
+
+binary_sensor:
+  # Pravdivy stav BLE spojeni s karavanem (HobbyConnect) - rizen z ble_client
+  # triggeru on_connect / on_disconnect (ble_client nema vlastni binary platformu).
+  # POZOR: odlisit od "napajeni" (= LINE_EN, tj. 230V sit)! To neni stav spojeni.
+  # device_class connectivity -> v HA se zobrazi "Connected / Disconnected".
+  - platform: template
+    id: karavan_ble_conn
+    name: "Karavan spojeni"
+    device_class: connectivity
+    # debounce: kratky BLE vypadek neflappuje; "Disconnected" az po 20 s mimo dosah
+    filters:
+      - delayed_off: 20s
+    on_release:
+      # BLE mimo dosah -> hodnoty uz nejsou aktualni: zneplatnit na "Unavailable",
+      # aby bylo zrejme, ze karavan neni v dosahu (a ovladani nema smysl).
+      then:
+        - lambda: |-
+            id(sens_temp_in).publish_state(NAN);
+            id(sens_temp_out).publish_state(NAN);
+            id(sens_batt_voltage).publish_state(NAN);
+            id(sens_batt_current).publish_state(NAN);
+            id(sens_batt_soc).publish_state(NAN);
+            id(sens_batt_remaining).publish_state(NAN);
+            id(sens_batt_temp).publish_state(NAN);
+            id(sens_water).publish_state(NAN);
+            id(txt_napajeni).publish_state("");
+    on_press:
+      # po navratu do dosahu vynut cerstve nacteni vsech promennych
+      then:
+        - delay: 5s
+        - lambda: 'id(hobby_caravan_hub).on_command_send("net-BT_VARS");'
 
 switch:
   - platform: fendt_caravan
@@ -165,6 +215,7 @@ text_sensor:
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: power_status
+    id: txt_napajeni
     name: "Karavan napajeni"
   - platform: fendt_caravan
     parent_id: hobby_unit

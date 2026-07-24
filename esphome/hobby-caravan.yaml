@@ -51,6 +51,35 @@ fendt_caravan:
   ble_client_id: hobby_ble
 
 sensor:
+  # ─── Diagnostika ESP (přidáno 2026-07-21) ────────────────────────────────
+  # Důvod: když BLE spojení na karavan kolísá, nešlo rozhodnout PROČ —
+  # chyběla data o síle signálu i o tom, jestli ESP nerestartoval.
+  # Všechno je entity_category: diagnostic → v HA to sedí zvlášť a nepleteme
+  # si to s hodnotami z karavanu.
+
+  # Síla BLE signálu na karavan — hlavní podezřelý při kolísání spojení.
+  # ⚠️ Čte se z advertisingu, takže během aktivního ble_client spojení může
+  # být `unavailable` (připojené zařízení už nemusí inzerovat). Hodnota se
+  # objeví právě ve chvíli, kdy je spojení rozpadlé — což je přesně ten
+  # okamžik, který nás zajímá.
+  - platform: ble_rssi
+    mac_address: DE:00:32:00:61:44
+    name: "Karavan BLE signal"
+    entity_category: diagnostic
+
+  # WiFi signál ESP (jiná věc než BLE!) — kdyby vypadávalo i spojení do HA.
+  - platform: wifi_signal
+    name: "Karavan ESP WiFi signal"
+    update_interval: 60s
+    entity_category: diagnostic
+
+  # Uptime = pozná restart ESP (výpadek proudu, watchdog, OTA).
+  # Bez toho nešlo po výpadku 19.7. zjistit, jestli se ESP restartoval.
+  - platform: uptime
+    name: "Karavan ESP uptime"
+    entity_category: diagnostic
+
+  # ─── Data z karavanu (HobbyConnect přes BLE) ─────────────────────────────
   - platform: fendt_caravan
     parent_id: hobby_caravan_hub
     type: mcu_device
@@ -211,7 +240,20 @@ switch:
     type: dusche
     name: "Karavan svetlo koupelna"
 
+button:
+  # Restart ESP na dálku — vynutí čerstvý BLE stack, když se spojení
+  # na karavan zasekne. Do 2026-07-21 nebylo jak restartovat jinak než
+  # OTA uploadem nebo fyzicky.
+  - platform: restart
+    name: "Karavan ESP restart"
+    entity_category: config
+
 text_sensor:
+  # Verze ESPHome na ESP — ať je poznat, jestli běží to, co je v gitu.
+  - platform: version
+    name: "Karavan ESP verze"
+    entity_category: diagnostic
+
   - platform: fendt_caravan
     parent_id: hobby_unit
     type: power_status

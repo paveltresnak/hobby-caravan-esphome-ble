@@ -53,7 +53,9 @@ ESPHome → Instalovat → Spustit*. Otevři webové rozhraní ESPHome (dashboar
    - z **logu ESPHome** (s aktivním `esp32_ble_tracker` uvidíš nalezené zařízení
      `HobbyConnect Data` a jeho adresu), nebo
    - mobilní appkou **nRF Connect** / BLE scanner (hledej `HobbyConnect Data`).
-2. Vlož MAC do `hobby-caravan.yaml` (`ble_client: → mac_address:` místo `XX:XX:…`).
+2. Vlož MAC do `esphome/secrets.yaml` jako `caravan_mac: "AA:BB:CC:DD:EE:FF"`.
+   V `hobby-caravan.yaml` se na ni odkazuje `!secret caravan_mac` — samotný yaml
+   se tak nemusí upravovat a MAC nikdy neskončí v gitu.
 3. Nahraj: v ESPHome dashboardu **Install → Wirelessly** (OTA), nebo
    `esphome run esphome/hobby-caravan.yaml`.
 

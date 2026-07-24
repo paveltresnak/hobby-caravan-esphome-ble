@@ -3,7 +3,9 @@
 ## 1. Příprava
 - ESPHome (zde jako Docker kontejner na Synology NAS, dashboard `http://NAS:6052`).
 - `esphome/secrets.example.yaml` → zkopíruj na `esphome/secrets.yaml`, doplň Wi-Fi
-  (2,4 GHz!). **`secrets.yaml` necommituj.**
+  (2,4 GHz!) a `caravan_mac` = **BLE MAC HobbyConnectu ve tvém karavanu**
+  (najdeš skenem — zařízení `HobbyConnect Data`, viz `docs/getting-started.md`).
+  **`secrets.yaml` necommituj.**
 
 ## 2. První flash (USB)
 Custom (externí) komponenta nejde nahrát úplně přes prohlížeč při úplně prvním

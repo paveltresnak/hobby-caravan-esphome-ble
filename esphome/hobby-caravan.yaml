@@ -32,7 +32,9 @@ esp32_ble_tracker:
     active: true
 
 ble_client:
-  - mac_address: DE:00:32:00:61:44
+  # MAC HobbyConnectu je u každého karavanu jiná — doplň si ji do secrets.yaml
+  # jako `caravan_mac` (jak ji najít, viz docs/flashing.md).
+  - mac_address: !secret caravan_mac
     id: hobby_ble
     auto_connect: true
     on_connect:
@@ -63,7 +65,7 @@ sensor:
   # objeví právě ve chvíli, kdy je spojení rozpadlé — což je přesně ten
   # okamžik, který nás zajímá.
   - platform: ble_rssi
-    mac_address: DE:00:32:00:61:44
+    mac_address: !secret caravan_mac
     name: "Karavan BLE signal"
     entity_category: diagnostic
 

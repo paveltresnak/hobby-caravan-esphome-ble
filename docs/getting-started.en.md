@@ -52,7 +52,9 @@ Install → Start*. Open the ESPHome web UI (dashboard).
    - from the **ESPHome log** (with `esp32_ble_tracker` active you'll see the device
      `HobbyConnect Data` and its address), or
    - with the **nRF Connect** app / a BLE scanner (look for `HobbyConnect Data`).
-2. Put the MAC into `hobby-caravan.yaml` (`ble_client: → mac_address:` instead of `XX:XX:…`).
+2. Put the MAC into `esphome/secrets.yaml` as `caravan_mac: "AA:BB:CC:DD:EE:FF"`.
+   `hobby-caravan.yaml` refers to it via `!secret caravan_mac`, so you never edit
+   the yaml itself and the MAC never ends up in git.
 3. Flash: in the ESPHome dashboard **Install → Wirelessly** (OTA), or
    `esphome run esphome/hobby-caravan.yaml`.
 

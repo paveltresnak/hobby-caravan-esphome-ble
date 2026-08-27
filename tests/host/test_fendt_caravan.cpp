@@ -173,6 +173,12 @@ static void number_tolerates_padding_and_unit_suffix() {
   CHECK_NEAR(DeviceDecoders::decode_number(" 13,9 V"), 13.9f);
 }
 
+// Same leniency for the upstream voltage decoder: "13,9 V" leaves a trailing space
+// once the unit is stripped, which a strict full-string parse rejects (reads as 0 V).
+static void voltage_tolerates_unit_suffix() {
+  CHECK_NEAR(DeviceDecoders::decode_voltage("13,9 V"), 13.9f);
+}
+
 static void number_parses_plain_integer() {
   CHECK_NEAR(DeviceDecoders::decode_number("4"), 4.0f);  // WATER_LEVEL = full tank
 }
@@ -181,8 +187,22 @@ static void number_of_empty_value_does_not_crash() {
   CHECK(std::isnan(DeviceDecoders::decode_number("")));
 }
 
+// The panel pads integers too ("TEMP_IN_OFFSET:  0"), which a strict full-string parse
+// rejects - and a rejected value silently reads as 0.
+static void int_tolerates_padding() {
+  CHECK(DeviceDecoders::decode_int("  4") == 4);
+}
+
+static void int_of_garbage_returns_zero() {
+  CHECK(DeviceDecoders::decode_int("n/a") == 0);
+}
+
 static void int_str_maps_index_to_text() {
   CHECK_STR(DeviceDecoders::decode_int_str("1", {"Auto", "Gas", "12V", "230V"}), "Gas");
+}
+
+static void int_str_tolerates_padding() {
+  CHECK_STR(DeviceDecoders::decode_int_str(" 2", {"Auto", "Gas", "12V", "230V"}), "12V");
 }
 
 static void int_str_out_of_range_returns_empty() {
@@ -228,9 +248,13 @@ static const TestCase TESTS[] = {
     {"temperature_of_empty_value_does_not_crash", temperature_of_empty_value_does_not_crash},
     {"temperature_of_garbage_does_not_crash", temperature_of_garbage_does_not_crash},
     {"number_tolerates_padding_and_unit_suffix", number_tolerates_padding_and_unit_suffix},
+    {"voltage_tolerates_unit_suffix", voltage_tolerates_unit_suffix},
     {"number_parses_plain_integer", number_parses_plain_integer},
     {"number_of_empty_value_does_not_crash", number_of_empty_value_does_not_crash},
+    {"int_tolerates_padding", int_tolerates_padding},
+    {"int_of_garbage_returns_zero", int_of_garbage_returns_zero},
     {"int_str_maps_index_to_text", int_str_maps_index_to_text},
+    {"int_str_tolerates_padding", int_str_tolerates_padding},
     {"int_str_out_of_range_returns_empty", int_str_out_of_range_returns_empty},
     {"variable_without_decoder_does_not_crash", variable_without_decoder_does_not_crash},
     {"variable_with_decoder_stores_value", variable_with_decoder_stores_value},

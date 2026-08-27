@@ -5,6 +5,7 @@
 #include "esphome/core/string_ref.h"
 #include <algorithm>
 #include <cctype>
+#include <climits>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -12,7 +13,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <charconv>
 #include <optional>
 
 namespace esphome::fendt_caravan {
@@ -42,11 +42,12 @@ class DeviceDecoders {
   static std::string decode_int_str(const std::string &data, const std::vector<std::string> &list);
 
  private:
-  template<typename T> static std::optional<T> parse_data(const std::string &str);
   // Leading number of a value, ignoring padding and a trailing unit ("  13,9 V").
   // NAN when there is no number at all - the panel is a third party device and
   // exceptions are disabled on ESP-IDF, so throwing here would reboot the ESP.
   static float parse_leading_float(const std::string &value);
+  // Same for integers: the panel pads them as well ("TEMP_IN_OFFSET:  0").
+  static std::optional<int> parse_leading_int(const std::string &value);
 };
 
 }  // namespace esphome::fendt_caravan

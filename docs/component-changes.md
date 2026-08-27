@@ -61,11 +61,12 @@ pokračuje v přepsané podobě, náš fork ty chyby ale zdědil — opraveny js
 | `Variable::decode()` volal `decode_funct_` bez kontroly, ale `HS_KEY`/`HS_KEY_LONG` jsou registrované s `nullptr` | prázdný dekodér se přeskočí (klíč je jen pro zápis); `value_` navíc inicializovaná |
 | chunkování příkazů brala každý kus od indexu 0 (a indexy byly `int8_t`) | `split_command_chunks()` posouvá offset, funguje i přes 127 B |
 | odeslaný příkaz se z fronty mazal přes `remove()` = **všechny** shodné najednou | maže se jen odeslaná položka, takže dva stejné toggly za sebou projdou oba |
+| `decode_int`/`decode_int_str`/`decode_voltage` četly hodnotu přes `from_chars`, který **vyžaduje shodu celého řetězce** → panel posílá `TEMP_IN_OFFSET:  0` nebo `13,9 V` a hodnota tiše spadla na 0 (+ `Data parse error` v logu při každém připojení) | stejné shovívavé parsování jako u čísel (`strtol`/`strtof` + kontrola, že se něco přečetlo) |
 
 Framing (chunkování příkazů + skládání notifikací) je kvůli testovatelnosti vytažený
 do `protocol_framing.h` — je to jediná část komponenty bez ESP-IDF typů, takže se dá
-přeložit a otestovat na PC: [`tests/host/`](../tests/host/) (21 testů, `./run_tests.sh`).
-Před opravou v nich 4 padaly na chybný výsledek a 6 skončilo pádem procesu.
+přeložit a otestovat na PC: [`tests/host/`](../tests/host/) (25 testů, `./run_tests.sh`).
+Proti kódu před opravou jich 7 padalo na chybný výsledek a 6 skončilo pádem procesu.
 
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje

@@ -3,6 +3,10 @@ esphome:
   friendly_name: hobby-caravan
   min_version: 2026.4.0
   name_add_mac_suffix: false
+  # verze tohohle projektu (ne verze ESPHome) - v HA v info o zarizeni
+  project:
+    name: paveltresnak.hobby-caravan
+    version: "1.1.0"
 
 esp32:
   variant: esp32c3

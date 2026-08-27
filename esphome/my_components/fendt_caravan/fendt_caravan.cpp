@@ -1,4 +1,5 @@
 #include "fendt_caravan.h"
+#include "protocol_framing.h"
 #include "esphome/core/application.h"
 
 #ifdef USE_ESP32
@@ -37,7 +38,9 @@ void FendtCaravan::loop() {
 
     ESP_LOGD(TAG, "Command sent: %s, %d", cmd.c_str(), cmd.length());
     this->last_command_time_ = time_stamp;
-    this->commands_.erase(std::remove(this->commands_.begin(), this->commands_.end(), cmd), this->commands_.end());
+    // drop the command we just sent, not every identical one: two toggles of the same
+    // switch in a row are two separate commands and both have to go out
+    this->commands_.erase(this->commands_.begin());
   }
 }
 
@@ -83,22 +86,12 @@ void FendtCaravan::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
     }
     case ESP_GATTC_NOTIFY_EVT:
       if (param->notify.handle == this->char_handle_) {
-        this->wait_buffer_ = true;
-        char buffer[25];
-        memset(buffer, 0, param->notify.value_len + 1);
-        memcpy(buffer, param->notify.value, param->notify.value_len);
-        std::string result = std::string(buffer);
-        if (!this->last_response_.empty()) {
-          result = this->last_response_ + result;
-          this->last_response_.clear();
+        auto message = feed_notification_chunk(this->last_response_, param->notify.value, param->notify.value_len);
+        this->wait_buffer_ = !message.has_value();
+        if (message.has_value()) {
+          ESP_LOGD(TAG, "Notified value: %s", message->c_str());
+          this->on_data_received_(*message);
         }
-        if (strchr(buffer, '@') != nullptr) {
-          this->last_response_.append(buffer, param->notify.value_len - 1);
-          break;
-        }
-        this->wait_buffer_ = false;
-        ESP_LOGD(TAG, "Notified value: %s", result.c_str());
-        this->on_data_received_(result);
       }
       break;
     default:
@@ -106,25 +99,8 @@ void FendtCaravan::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
   }
 }
 void FendtCaravan::add_command_(const std::string &cmd) {
-  int8_t start_index = 0;
-  int8_t end_index = 17;
-  int8_t last_index = cmd.length();
-  bool last_chunk = false;
-  while (!last_chunk) {
-    std::string chunk;
-    if (end_index < last_index) {
-      chunk = cmd.substr(0, 17);
-      chunk += "@";
-    } else {
-      chunk = cmd.substr(start_index, last_index);
-      last_chunk = true;
-    }
+  for (const auto &chunk : split_command_chunks(cmd))
     this->commands_.push_back(chunk);
-    start_index = end_index;
-    end_index = start_index + 17;
-    if (end_index > last_index)
-      end_index = last_index;
-  }
 }
 
 void FendtCaravan::on_data_received_(const std::string &data) {

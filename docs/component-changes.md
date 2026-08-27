@@ -8,8 +8,9 @@ implementations like Water Level, Battery Level"* + neměl WRITE příkazy.
 Lokální fork je v `esphome/my_components/fendt_caravan/`. Změny:
 
 ## 1. Dekodér `decode_number`
-`sensor/device_decoders.{h,cpp}` — nový float dekodér: čárka→tečka + `std::stof`,
-zvládá mezery i přilepené jednotky (`13,9V`, `0,0 A`, `100%`, `77,5h`, `14.0^C`).
+`sensor/device_decoders.{h,cpp}` — nový float dekodér: čárka→tečka + parsování čísla
+na začátku hodnoty, zvládá mezery i přilepené jednotky (`13,9V`, `0,0 A`, `100%`,
+`77,5h`, `14.0^C`). Původně přes `std::stof`, dnes přes `strtof` — viz [§8](#8-robustnost--opravy-pádů-z-review-pr-13327).
 
 ## 2. Baterie (`IBS0_*`) ⭐ klíčový objev
 `sensor/control_unit_device_sensor.{h,cpp}` — Hobby posílá baterii pod prefixem
@@ -43,6 +44,28 @@ baterie/lednice/světel. Bez HA entity (jen se dekódují → připraveny k nav�
 komentované statusem: `[OK]` odzkoušeno (naše 495 UL) · `[?]` máme/neodzkoušeno ·
 `[--]` jiná výbava (nemáme; z dumpu/komunity). Z komponenty je tak nejúplnější
 referenční dekodér HobbyConnect — užitečné pro upstream i další karavany.
+
+## 8. Robustnost — opravy pádů z review PR #13327
+
+Maintainer ESPHome nechal 16. 8. 2026 na PR proběhnout `esphbot review`; ten našel
+v komponentě **tři cesty, kterými data z panelu shodí ESP** (ESP-IDF překládá ESPHome
+s vypnutými výjimkami, takže `throw` = `abort()` = reboot). Autor PR 26. 8. zavřel a
+pokračuje v přepsané podobě, náš fork ty chyby ale zdědil — opraveny jsou tady:
+
+| Bylo | Je |
+|------|-----|
+| `char buffer[25]` v notify handleru plněný `memset`/`memcpy` délkou `value_len` z protistrany (rámec je omezený až MTU, ne 24 B) | žádný pevný buffer — rámec se rovnou skládá do `std::string` |
+| skládání víc než dvou rámců zahodilo všechny kromě posledních dvou | `pending` se plní postupně, zpráva je hotová až rámcem bez `@` |
+| `std::stof` v `decode_temperature`/`decode_number` → `abort()` na neparsovatelné hodnotě | `strtof` + kontrola, že se něco přečetlo; jinak `NAN` a `ESP_LOGE` (v HA *Unavailable*, ne falešná 0) |
+| `list.at(val)` v `decode_int_str` → `abort()` mimo rozsah | kontrola rozsahu + `""` |
+| `Variable::decode()` volal `decode_funct_` bez kontroly, ale `HS_KEY`/`HS_KEY_LONG` jsou registrované s `nullptr` | prázdný dekodér se přeskočí (klíč je jen pro zápis); `value_` navíc inicializovaná |
+| chunkování příkazů brala každý kus od indexu 0 (a indexy byly `int8_t`) | `split_command_chunks()` posouvá offset, funguje i přes 127 B |
+| odeslaný příkaz se z fronty mazal přes `remove()` = **všechny** shodné najednou | maže se jen odeslaná položka, takže dva stejné toggly za sebou projdou oba |
+
+Framing (chunkování příkazů + skládání notifikací) je kvůli testovatelnosti vytažený
+do `protocol_framing.h` — je to jediná část komponenty bez ESP-IDF typů, takže se dá
+přeložit a otestovat na PC: [`tests/host/`](../tests/host/) (21 testů, `./run_tests.sh`).
+Před opravou v nich 4 padaly na chybný výsledek a 6 skončilo pádem procesu.
 
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje

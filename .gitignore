@@ -4,3 +4,5 @@ secrets.yaml
 .esphome/
 .pioenvs/
 *.bak*
+tests/host/test_fendt_caravan
+tests/host/test_fendt_caravan.exe

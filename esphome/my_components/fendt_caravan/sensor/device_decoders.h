@@ -5,8 +5,11 @@
 #include "esphome/core/string_ref.h"
 #include <algorithm>
 #include <cctype>
+#include <cmath>
+#include <cstdlib>
 #include <ctime>
 #include <iomanip>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <charconv>
@@ -40,6 +43,10 @@ class DeviceDecoders {
 
  private:
   template<typename T> static std::optional<T> parse_data(const std::string &str);
+  // Leading number of a value, ignoring padding and a trailing unit ("  13,9 V").
+  // NAN when there is no number at all - the panel is a third party device and
+  // exceptions are disabled on ESP-IDF, so throwing here would reboot the ESP.
+  static float parse_leading_float(const std::string &value);
 };
 
 }  // namespace esphome::fendt_caravan

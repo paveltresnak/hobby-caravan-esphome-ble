@@ -4,6 +4,17 @@
 namespace esphome::fendt_caravan {
 static const char *const TAG = "FC.COD";
 
+float DeviceDecoders::parse_leading_float(const std::string &value) {
+  const char *begin = value.c_str();
+  char *end = nullptr;
+  float result = std::strtof(begin, &end);
+  if (end == begin) {
+    ESP_LOGE(TAG, "Data parse error. Data: %s", value.c_str());
+    return NAN;
+  }
+  return result;
+}
+
 float DeviceDecoders::decode_temperature(const std::string &data) {
   std::string value = data;
   size_t start = value.find("^C");
@@ -12,7 +23,7 @@ float DeviceDecoders::decode_temperature(const std::string &data) {
   start = value.find(',');
   if (start != std::string::npos)
     value.replace(start, 1, ".");
-  return std::stof(value);
+  return parse_leading_float(value);
 }
 float DeviceDecoders::decode_voltage(const std::string &data) {
   std::string value = data;
@@ -35,7 +46,7 @@ float DeviceDecoders::decode_number(const std::string &data) {
   size_t pos = value.find(',');
   if (pos != std::string::npos)
     value.replace(pos, 1, ".");
-  return std::stof(value);
+  return parse_leading_float(value);
 }
 
 int DeviceDecoders::decode_int(const std::string &data) {
@@ -76,7 +87,11 @@ std::string DeviceDecoders::decode_int_str(const std::string &data, const std::v
     return "";
   }
   int val = result.value();
-  return list.at(val);
+  if (val < 0 || static_cast<size_t>(val) >= list.size()) {
+    ESP_LOGE(TAG, "Value out of range. Data: %s", data.c_str());
+    return "";
+  }
+  return list[val];
 }
 
 template<typename T> std::optional<T> DeviceDecoders::parse_data(const std::string &str) {

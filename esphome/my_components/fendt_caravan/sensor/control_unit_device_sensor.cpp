@@ -101,6 +101,19 @@ void ControlUnitDeviceSensor::setup() {
   this->add_variable(light_amb3);
   auto *light_dusche = new Variable<bool>("LIGHT_DUSCHE", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
   this->add_variable(light_dusche);
+  // V 495 UL neosazene vyvody, jina pudorysna varianta je ale pouziva (WC, druhe svetlo
+  // v kuchyni, pridavne rele L/P) -> plnohodnotne toggle promenne, ne jen decode-only
+  auto *light_wasch = new Variable<bool>("LIGHT_WASCH", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
+  this->add_variable(light_wasch);
+  auto *light_kueche2 =
+      new Variable<bool>("LIGHT_KUECHE2", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
+  this->add_variable(light_kueche2);
+  auto *light_zusatzl =
+      new Variable<bool>("LIGHT_ZUSATZL", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
+  this->add_variable(light_zusatzl);
+  auto *light_zusatzr =
+      new Variable<bool>("LIGHT_ZUSATZR", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
+  this->add_variable(light_zusatzr);
   auto *fridge_on = new Variable<bool>("FRIDGE_ON_OFF", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
   this->add_variable(fridge_on);
   auto *therme_on = new Variable<bool>("THERME_ON", DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
@@ -139,10 +152,8 @@ void ControlUnitDeviceSensor::setup() {
   ref("IBS0_RECALIBRATED"); ref("IBS0_CAPACITY"); ref("IBS0_TYPE"); ref("IBS0_AVAILABLE");
   // --- Voda [?] (stupnice neoverena) ---
   ref("WATER_MEASUREMENT");
-  // --- Svetla nezapojena v 495 UL / readback stmivacu [?] ---
-  // (LIGHT_DUSCHE = koupelna -> ma vlastni switch entitu vyse, neni v ref katalogu)
-  ref("LIGHT_WASCH"); ref("LIGHT_KUECHE2");
-  ref("LIGHT_ZUSATZL"); ref("LIGHT_ZUSATZR");
+  // --- Readback stmivacu [?] ---
+  // (LIGHT_DUSCHE/WASCH/KUECHE2/ZUSATZL/ZUSATZR maji vlastni switch entity vyse)
   ref("LIGHT_DIM0"); ref("LIGHT_DIM1"); ref("LIGHT_DIM2"); ref("LIGHT_DIM3"); ref("LIGHT_DIM4");
   ref("LIGHT_BUSY");
   // --- Lednice doplnkove [?] (ovladani neovereno) ---

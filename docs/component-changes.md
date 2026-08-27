@@ -23,8 +23,24 @@ Přidány proměnné + senzory: `IBS0_UBAT` (napětí), `IBS0_IBAT` (proud),
 
 ## 4. Spínaná světla a relé (WRITE = `cmd-tgl`)
 Nové nativní `switch` typy (`switch/__init__.py` + `SUB_SWITCH` v device sensoru):
-`kueche`, `aussen`, `amb1`, `amb2`, `amb3`, `fridge` (`FRIDGE_ON_OFF`),
-`therme` (`THERME_ON`). Dekódují stav (zpětná vazba) a togglují přes `cmd-tgl:KEY`.
+`kueche`, `aussen`, `amb1`, `amb2`, `amb3`, `dusche` (`LIGHT_DUSCHE`),
+`fridge` (`FRIDGE_ON_OFF`), `therme` (`THERME_ON`). Dekódují stav (zpětná vazba)
+a togglují přes `cmd-tgl:KEY`.
+
+Plus `wasch`, `kueche2`, `zusatzl`, `zusatzr` — v našem 495 UL neosazené vývody, ale
+jiný půdorys je používá (v 460 UFE je `LIGHT_WASCH` kandidát na světlo WC, viz issue #1).
+A pro klíč, který katalog nezná, **stačí `key_name` v YAML** — `FendtSwitch::setup()`
+si proměnnou v takovém případě založí sám (`decode_bool` + `cmd-tgl`), takže nový
+model karavanu už nevyžaduje zásah do C++:
+
+```yaml
+switch:
+  - platform: fendt_caravan
+    parent_id: hobby_unit
+    type: wasch
+    key_name: LIGHT_COKOLIV_PANEL_POSILA
+    name: "Svetlo WC"
+```
 
 ## 5. Stmívače a lednice (WRITE = `net-KEY-N`) — řešeno v YAML
 Stmívače (`LIGHT_DIM2/DIM3`) jako HA `light` (monochromatic + template `output`),

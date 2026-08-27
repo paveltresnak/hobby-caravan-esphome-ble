@@ -2,6 +2,8 @@
 
 #ifdef USE_ESP32
 #include "esphome/components/fendt_caravan/caravan_component_base.h"
+#include "esphome/components/fendt_caravan/sensor/device_commands.h"
+#include "esphome/components/fendt_caravan/sensor/device_decoders.h"
 #include "esphome/components/fendt_caravan/variable.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/core/string_ref.h"
@@ -15,9 +17,13 @@ class FendtSwitch : public CaravanComponentBase<bool>, public switch_::Switch {
     if (this->key_name_.empty())
       return;
     auto *variable = static_cast<Variable<bool> *>(this->get_parent()->get_variable(this->key_name_));
-    if (variable != nullptr) {
-      this->set_variable(variable);
+    if (variable == nullptr) {
+      // Key the built-in catalog does not know: caravans differ in what the panel exposes,
+      // so let any on/off key be driven from YAML instead of requiring a component change.
+      variable = new Variable<bool>(this->key_name_, DeviceDecoders::decode_bool, Commands::update_toggle<bool>);
+      this->get_parent()->add_variable(variable);
     }
+    this->set_variable(variable);
   }
 
  protected:

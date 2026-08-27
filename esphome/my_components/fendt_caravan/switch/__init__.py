@@ -37,6 +37,12 @@ CONFIG_SCHEMA = cv.typed_schema(
         "fridge": _switch_schema(icon="mdi:fridge", key_name_="FRIDGE_ON_OFF"),
         "therme": _switch_schema(icon="mdi:water-boiler", key_name_="THERME_ON"),
         "dusche": _switch_schema(icon="mdi:shower", key_name_="LIGHT_DUSCHE"),
+        # Not wired in a 495 UL, but other floor plans use them (toilet, second kitchen
+        # light, spare relays). Any other on/off key works too via key_name.
+        "wasch": _switch_schema(icon="mdi:toilet", key_name_="LIGHT_WASCH"),
+        "kueche2": _switch_schema(icon="mdi:lightbulb", key_name_="LIGHT_KUECHE2"),
+        "zusatzl": _switch_schema(icon="mdi:light-switch", key_name_="LIGHT_ZUSATZL"),
+        "zusatzr": _switch_schema(icon="mdi:light-switch", key_name_="LIGHT_ZUSATZR"),
     }
 )
 

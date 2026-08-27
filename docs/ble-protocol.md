@@ -54,7 +54,7 @@ Delší zprávy jsou **chunkované po 17 bajtech** s koncovým `@` (most je skl�
 | `LIGHT_AMB2` | ambient **obývák** — kolem horních skříněk |
 | `LIGHT_AMB3` | **hlavní světlo** — skleněná obruč nad konferenčním stolem |
 | `LIGHT_DUSCHE` | koupelna |
-| `LIGHT_WASCH` / `LIGHT_ZUSATZL` / `LIGHT_ZUSATZR` | jen relé, bez svítidla (neosazené vývody) |
+| `LIGHT_WASCH` / `LIGHT_ZUSATZL` / `LIGHT_ZUSATZR` | v 495 UL jen relé, bez svítidla (neosazené vývody) — jiný půdorys je používá, mají vlastní switch typy |
 | `LIGHT_KUECHE2` | — (nic) |
 
 > **Rozložení (495 UL):** vepředu (směrem k oji) **ložnice** → uprostřed **kuchyň + koupelna** → vzadu **obývák**.

@@ -29,13 +29,22 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 |---------|--------------|--------|
 | 🌡️ Temperaturen | innen, außen (°C) | ✅ lesen |
 | 🔋 Batterie | Spannung, Strom, Ladung %, Restzeit, Temp. | ✅ lesen (`IBS0_*`) |
-| 💡 Schaltbare Lichter | Küche, außen, Ambiente 1–3 | ✅ Steuerung + Status |
-| 🎚️ Dimmer | Wohnraum, Ambiente Heckfenster (0–15) | ✅ Steuerung |
+| 💡 Schaltbare Lichter | Küche, Bad, außen, Ambiente 1–3 | ✅ Steuerung + Status |
+| 🎚️ Dimmer | Wohnraum, Ambiente Heckfenster, Bett rechts/links (0–15) | ✅ Steuerung |
 | 🔆 Zentral | Hauptschalter, alle Lichter | ✅ Steuerung + Status |
 | 🔥 Heizung | Boiler (Fußbodenheizung je nach Modell) | ✅ Steuerung + Status |
-| 🧊 Kühlschrank | Ein/Aus · Quelle (Auto/Gas/12V/230V) · Temperatur (1–5) | ✅ Steuerung |
+| 🧊 Kühlschrank | Ein/Aus · Quelle (Auto/Gas/12V/230V) · Temperatur (1–5) | ✅ Steuerung + Status |
 | 🔌 Stromversorgung | 230 V verbunden, Firmware-Version | ✅ lesen |
-| 💧 Frischwassertank | `WATER_LEVEL` | ⏳ Skala offen (beim Befüllen erfassen) |
+| 💧 Frischwassertank | Füllstand in % (0 / 25 / 50 / 75 / 100) | ✅ lesen ¹ |
+| 📶 Verbindung zum Wohnwagen | BLE verbunden / außer Reichweite | ✅ lesen ² |
+| 🩺 ESP-Diagnose | Uptime, WLAN-Signal, Firmware-Version, Neustart | ✅ |
+
+> ¹ Die Skala von `WATER_LEVEL` ist **grob in 25-%-Schritten** (beim Befüllen verifiziert,
+> 01.07.2026), keine Liter. Das Panel misst **nur on demand** — einen frischen Wert sendet es,
+> wenn am Panel die Wasseranzeige geöffnet wird; das ESP fordert daher alle 10 min alle
+> Variablen neu an (`net-BT_VARS`).
+> ² Der echte BLE-Verbindungsstatus (`binary_sensor`), **nicht** `Stromversorgung` — das ist
+> das 230-V-Netz. Außer Reichweite werden die Messwerte *Unavailable* statt veralteter Werte.
 
 ## ⚡ Was du brauchst
 

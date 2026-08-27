@@ -12,7 +12,7 @@ Po nahrání firmwaru se ESP32-C3 objeví v HA jako **ESPHome** integrace
 | `sensor.…_napajeni` | 230 V připojeno |
 | `sensor.…_sw_verze` | verze SW panelu |
 | `sensor.…_baterie_nabiti` / `_napeti` / `_proud` / `_zbyva` / `_teplota` | baterie (`IBS0_*`) |
-| `sensor.…_nadrz_vody` | hladina pitné vody (stupnice TBD) |
+| `sensor.…_nadrz_vody` | hladina pitné vody v **%** (`WATER_LEVEL` 0–4 × 25 → 0/25/50/75/100), měřeno on-demand |
 
 ### Ovládání
 | Entita | Příkaz BLE |

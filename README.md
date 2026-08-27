@@ -29,13 +29,21 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 |--------|-------------|------|
 | 🌡️ Teploty | vnitřní, venkovní (°C) | ✅ čtení |
 | 🔋 Baterie | napětí, proud, nabití %, zbývající čas | ✅ čtení (`IBS0_*`) |
-| 💡 Spínaná světla | kuchyň, venku, ambient 1–3 | ✅ ovládání + stav |
-| 🎚️ Stmívače | obývák, ambient zadní okno (jas 0–15) | ✅ ovládání |
+| 💡 Spínaná světla | kuchyň, koupelna, venku, ambient 1–3 | ✅ ovládání + stav |
+| 🎚️ Stmívače | obývák, ambient zadní okno, postel vpravo/vlevo (jas 0–15) | ✅ ovládání |
 | 🔆 Centrální | hlavní vypínač, všechna světla | ✅ ovládání + stav |
 | 🔥 Topení | podlahové topení, bojler | ✅ ovládání + stav |
-| 🧊 Lednice | zap/vyp · zdroj (Auto/Plyn/12V/230V) · teplota (1–5) | ✅ ovládání |
+| 🧊 Lednice | zap/vyp · zdroj (Auto/Plyn/12V/230V) · teplota (1–5) | ✅ ovládání + stav |
 | 🔌 Napájení | 230 V připojeno, verze SW | ✅ čtení |
-| 💧 Nádrž vody | — | ⏳ čeká na zachycení při napouštění |
+| 💧 Nádrž vody | hladina v % (0 / 25 / 50 / 75 / 100) | ✅ čtení ¹ |
+| 📶 Spojení s karavanem | BLE připojeno / mimo dosah | ✅ čtení ² |
+| 🩺 Diagnostika ESP | uptime, Wi-Fi signál, verze firmwaru, restart | ✅ |
+
+> ¹ Stupnice `WATER_LEVEL` je **hrubá, po 25 %** (ověřeno při napouštění 2026-07-01), ne litry.
+> Panel měří **on-demand** — čerstvou hodnotu pošle, když se na něm otevře obrazovka vody;
+> ESP proto každých 10 min znovu vyžádá všechny proměnné (`net-BT_VARS`).
+> ² Skutečný stav BLE spojení (`binary_sensor`), **ne** `napájení` — to je 230V síť. Mimo dosah
+> přejdou měřené senzory na *Unavailable* místo zastaralé poslední hodnoty.
 
 ## ⚡ Co potřebuješ k rozběhnutí
 

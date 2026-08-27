@@ -28,13 +28,21 @@ mobile app and added **control (WRITE) commands**.
 |--------|-------------|--------|
 | 🌡️ Temperatures | inside, outside (°C) | ✅ read |
 | 🔋 Battery | voltage, current, charge %, remaining time, temp | ✅ read (`IBS0_*`) |
-| 💡 Switched lights | kitchen, exterior, ambient 1–3 | ✅ control + state |
-| 🎚️ Dimmers | living room, rear-window ambient (0–15) | ✅ control |
+| 💡 Switched lights | kitchen, bathroom, exterior, ambient 1–3 | ✅ control + state |
+| 🎚️ Dimmers | living room, rear-window ambient, bed right/left (0–15) | ✅ control |
 | 🔆 Central | master switch, all lights | ✅ control + state |
 | 🔥 Heating | boiler (floor heating optional per model) | ✅ control + state |
-| 🧊 Fridge | on/off · source (Auto/Gas/12V/230V) · temperature (1–5) | ✅ control |
+| 🧊 Fridge | on/off · source (Auto/Gas/12V/230V) · temperature (1–5) | ✅ control + state |
 | 🔌 Power | 230 V connected, firmware version | ✅ read |
-| 💧 Fresh water tank | `WATER_LEVEL` | ⏳ scale TBD (capture while filling) |
+| 💧 Fresh water tank | level in % (0 / 25 / 50 / 75 / 100) | ✅ read ¹ |
+| 📶 Caravan link | BLE connected / out of range | ✅ read ² |
+| 🩺 ESP diagnostics | uptime, Wi-Fi signal, firmware version, restart | ✅ |
+
+> ¹ The `WATER_LEVEL` scale is **coarse, in 25 % steps** (verified while filling, 2026-07-01),
+> not litres. The panel measures **on demand** — a fresh value is sent when the water screen is
+> opened on the panel, so the ESP re-requests all variables every 10 min (`net-BT_VARS`).
+> ² The true BLE link state (`binary_sensor`), **not** `power` — that one is the 230 V mains.
+> Out of range the measured sensors go *Unavailable* instead of showing a stale last value.
 
 ## ⚡ What you need
 

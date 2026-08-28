@@ -116,8 +116,14 @@ Kapacita **120 l** (zvětšeno z orig. 25 l). Škála je hrubá (4 stupně po 25
 > (fyzicky sáhneš na panel). Komponenta `fendt_caravan` je **pasivní posluchač** — na connect pošle
 > `net-BT_ID` + `net-BT_VARS` a pak už jen přijímá; **žádný periodický poll**. Proto se `WATER_LEVEL`
 > v HA aktualizuje jen ve chvíli, kdy panel aktivně změří (potvrzeno: `last_updated` sedí na stisk
-> tlačítka). Pro auto-refresh by šlo zkusit periodicky re-poslat `net-BT_VARS` (ověřit, zda donutí
-> čerstvé měření) + volitelně HA tlačítko „změřit vodu".
+> tlačítka). Proto konfigurace posílá `net-BT_VARS` po připojení a pak každých 10 min.
+
+> 🚱 **Po restartu jednotky hlásí `WATER_LEVEL:0`, i když nádrž plná je** (2026-08-28): po
+> vypnutí a zapnutí BT modulu přišel v dumpu i v odpovědi na `net-BT_VARS` **`0`** (v HA
+> „prázdná nádrž"), přestože v nádrži bylo 50 %. **Za čtyři minuty vrátil týž příkaz
+> `net-BT_VARS` správnou `2` (= 50 %)** — jednotka po startu prostě ještě žádnou hladinu
+> naměřenou nemá. Nula bezprostředně po restartu tedy **není měření, ale prázdná paměť**;
+> periodický `net-BT_VARS` (10 min) to srovná sám. Nula, která drží déle, už měření je.
 
 > 📚 Úplný výpis **všech** klíčů jednotky (vč. nepoužitých v 495 UL) je v
 > [`protocol-keys-full.md`](protocol-keys-full.md).

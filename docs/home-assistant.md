@@ -12,7 +12,7 @@ Po nahrání firmwaru se ESP32-C3 objeví v HA jako **ESPHome** integrace
 | `sensor.…_napajeni` | 230 V připojeno |
 | `sensor.…_sw_verze` | verze SW panelu |
 | `sensor.…_baterie_nabiti` / `_napeti` / `_proud` / `_zbyva` / `_teplota` | baterie (`IBS0_*`) |
-| `sensor.…_nadrz_vody` | hladina pitné vody v **%** (`WATER_LEVEL` 0–4 × 25 → 0/25/50/75/100), měřeno on-demand |
+| `sensor.…_nadrz_vody` | hladina pitné vody v **%** (`WATER_LEVEL` 0–4 × 25 → 0/25/50/75/100), měřeno on-demand; ⚠️ hned po restartu jednotky hlásí 0, než si hladinu změří |
 
 ### Ovládání
 | Entita | Příkaz BLE |
@@ -87,6 +87,49 @@ Baterie je spolehlivější ukazatel než vnitřní teplota — ta chodila i v p
 > na výchozí `off` bez ohledu na realitu v karavanu (`hlavni_vypinac` hlásil `off`,
 > zatímco reálně byl `on`). Skutečná hodnota se objeví až s první notifikací
 > z jednotky. Totéž platí pro světla — viz poznámka u stmívačů výše.
+
+### ⚠️ Třetí případ: „po OTA se BLE nechytí zpátky" (`status=133`)
+
+Pozorováno 2026-08-28. ESP po OTA normálně naběhne — WiFi, API i `uptime` v pořádku,
+žádný boot loop — ale spojení na karavan se **nenaváže skoro hodinu**. V logu:
+
+```
+[E][esp32_ble_client]: ESP_GATTC_OPEN_EVT in DISCONNECTING state (status=133)
+[W][esp32_ble_client]: Connection open error, status=133
+```
+
+Jednotku přitom **vidí** (`Found device` → `Connecting`), takže to není „mimo dosah"
+ani zaseklý HobbyConnect (ten by hlásil `spojeni = on` bez dat).
+
+**Jak si ověřit, že jde o slabý signál, a ne o poruchu:**
+- `sensor.…_ble_signal` má smysl **právě v odpojeném stavu** (připojené zařízení už
+  neinzeruje). Tady ukazoval **-95 až -100 dBm**, přičemž den předtím se spojení
+  navazovalo při **-92 až -95 dBm** → link je trvale na hraně a pár dB rozhoduje.
+- ⚠️ **Když ESP zrovna zkouší připojení, vzorky RSSI přestanou chodit** — tracker během
+  connect scanu ten senzor neplní. Ticho tedy neznamená, že jednotka zmizela.
+- Historie v HA (*Nastavení → Historie*) ukáže, kdy data reálně přestala téct. Pokud
+  jela až do restartu, není to postupné odumírání linky.
+
+**Co s tím:**
+1. **Rozšířit skenovací okno** — ESP ve výchozím stavu poslouchá jen 30 ms z každých
+   320 ms (9 % času), což u slabého signálu propustí většinu inzerátů:
+   ```yaml
+   esp32_ble_tracker:
+     scan_parameters:
+       active: true
+       interval: 320ms
+       window: 200ms
+       connection_scan_window: 200ms
+   ```
+2. **Posunout ESP blíž k panelu.** U -98 dBm udělá pár desítek centimetrů větší rozdíl
+   než jakákoli konfigurace. (Tip: porovnej v UniFi sílu WiFi signálu ESP a jiného
+   zařízení v karavanu — když je ESP o 20 dB lepší, sedí u kraje směrem k AP, tedy co
+   nejdál od panelu.)
+3. Vypnout appku HobbyConnect na telefonu — **jednotka přijímá jediné BLE spojení**,
+   takže když ho drží telefon, ESP se nedostane dovnitř.
+
+V našem případě se spojení nakonec obnovilo **samo, ~15 min po nasazení širšího okna**;
+tvrdý restart ESP pak navazoval do ~10 s. Které z toho rozhodlo, prokázat nelze.
 
 ## Přesnost zobrazení (display precision)
 ESP posílá floaty (např. 13,90 V je v 32bit floatu `13.8999996…`). **Zobrazenou

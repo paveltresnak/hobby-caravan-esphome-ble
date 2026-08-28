@@ -19,6 +19,11 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 (PR #13327 von *rawsludge*) auf, die wir auf volle Parität mit der HobbyConnect-App
 **erweitert** und um **Steuerbefehle (WRITE)** ergänzt haben.
 
+> ℹ️ Dieser PR wurde im August 2026 **geschlossen** (der Autor schreibt die Komponente in
+> kleineren Teilen neu). Dieser Fork liegt hier und läuft eigenständig weiter — inklusive
+> der Fixes für die Abstürze, die das ESPHome-Review gefunden hat (siehe
+> [`docs/component-changes.md`](docs/component-changes.md)).
+
 > 🌍 Sprachen: [Česky](README.md) · [English](README.en.md) · **Deutsch** (diese Datei)
 
 ---
@@ -29,7 +34,7 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 |---------|--------------|--------|
 | 🌡️ Temperaturen | innen, außen (°C) | ✅ lesen |
 | 🔋 Batterie | Spannung, Strom, Ladung %, Restzeit, Temp. | ✅ lesen (`IBS0_*`) |
-| 💡 Schaltbare Lichter | Küche, Bad, außen, Ambiente 1–3 | ✅ Steuerung + Status |
+| 💡 Schaltbare Lichter | Küche, Bad, außen, Ambiente 1–3 — und **jeder weitere Schlüssel** des Panels ³ | ✅ Steuerung + Status |
 | 🎚️ Dimmer | Wohnraum, Ambiente Heckfenster, Bett rechts/links (0–15) | ✅ Steuerung |
 | 🔆 Zentral | Hauptschalter, alle Lichter | ✅ Steuerung + Status |
 | 🔥 Heizung | Boiler (Fußbodenheizung je nach Modell) | ✅ Steuerung + Status |
@@ -45,6 +50,9 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 > Variablen neu an (`net-BT_VARS`).
 > ² Der echte BLE-Verbindungsstatus (`binary_sensor`), **nicht** `Stromversorgung` — das ist
 > das 230-V-Netz. Außer Reichweite werden die Messwerte *Unavailable* statt veralteter Werte.
+> ³ Das Panel meldet dieselben Schlüssel unabhängig vom Grundriss: was im einen Wohnwagen ein
+> unbelegter Ausgang ist, ist im anderen ein echtes Licht (`LIGHT_WASCH` = WC-Licht im Hobby
+> 460 UFE). Es genügt `key_name: <SCHLÜSSEL>` unter `switch:` — kein C++-Eingriff nötig.
 
 ## ⚡ Was du brauchst
 

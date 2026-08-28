@@ -18,6 +18,10 @@ ESPHome komponentě [`fendt_caravan`](https://github.com/esphome/esphome/pull/13
 (PR #13327, autor *rawsludge*), kterou jsme **rozšířili** o plnou paritu s mobilní
 aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 
+> ℹ️ Ten PR byl v srpnu 2026 **zavřen** (autor komponentu přepisuje po menších částech).
+> Náš fork je v tomhle repu a běží samostatně — včetně oprav pádů, které na PR našla
+> revize ESPHome (viz [`docs/component-changes.md`](docs/component-changes.md)).
+
 > 🌍 Jazyky / Languages / Sprachen: **Česky** (tento dokument) ·
 > [English](README.en.md) · [Deutsch](README.de.md)
 
@@ -29,7 +33,7 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 |--------|-------------|------|
 | 🌡️ Teploty | vnitřní, venkovní (°C) | ✅ čtení |
 | 🔋 Baterie | napětí, proud, nabití %, zbývající čas | ✅ čtení (`IBS0_*`) |
-| 💡 Spínaná světla | kuchyň, koupelna, venku, ambient 1–3 | ✅ ovládání + stav |
+| 💡 Spínaná světla | kuchyň, koupelna, venku, ambient 1–3 — a **libovolný další klíč** panelu ³ | ✅ ovládání + stav |
 | 🎚️ Stmívače | obývák, ambient zadní okno, postel vpravo/vlevo (jas 0–15) | ✅ ovládání |
 | 🔆 Centrální | hlavní vypínač, všechna světla | ✅ ovládání + stav |
 | 🔥 Topení | podlahové topení, bojler | ✅ ovládání + stav |
@@ -44,6 +48,9 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 > ESP proto každých 10 min znovu vyžádá všechny proměnné (`net-BT_VARS`).
 > ² Skutečný stav BLE spojení (`binary_sensor`), **ne** `napájení` — to je 230V síť. Mimo dosah
 > přejdou měřené senzory na *Unavailable* místo zastaralé poslední hodnoty.
+> ³ Panel hlásí stejnou sadu klíčů bez ohledu na půdorys, takže co je v jednom karavanu
+> neosazený vývod, je v jiném reálné světlo (`LIGHT_WASCH` = WC v Hobby 460 UFE). Stačí
+> ve `switch:` uvést `key_name: <KLÍČ>` — zásah do C++ potřeba není.
 
 ## ⚡ Co potřebuješ k rozběhnutí
 

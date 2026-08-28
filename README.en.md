@@ -18,6 +18,10 @@ on the ESPHome component [`fendt_caravan`](https://github.com/esphome/esphome/pu
 (PR #13327 by *rawsludge*), which we **extended** to full parity with the HobbyConnect
 mobile app and added **control (WRITE) commands**.
 
+> ℹ️ That PR was **closed** in August 2026 (the author is rewriting the component in
+> smaller pieces). This fork lives here and runs on its own — including fixes for the
+> crash paths the ESPHome review found (see [`docs/component-changes.md`](docs/component-changes.md)).
+
 > 🌍 Languages: [Česky](README.md) · **English** (this file) · [Deutsch](README.de.md)
 
 ---
@@ -28,7 +32,7 @@ mobile app and added **control (WRITE) commands**.
 |--------|-------------|--------|
 | 🌡️ Temperatures | inside, outside (°C) | ✅ read |
 | 🔋 Battery | voltage, current, charge %, remaining time, temp | ✅ read (`IBS0_*`) |
-| 💡 Switched lights | kitchen, bathroom, exterior, ambient 1–3 | ✅ control + state |
+| 💡 Switched lights | kitchen, bathroom, exterior, ambient 1–3 — plus **any other key** your panel reports ³ | ✅ control + state |
 | 🎚️ Dimmers | living room, rear-window ambient, bed right/left (0–15) | ✅ control |
 | 🔆 Central | master switch, all lights | ✅ control + state |
 | 🔥 Heating | boiler (floor heating optional per model) | ✅ control + state |
@@ -43,6 +47,9 @@ mobile app and added **control (WRITE) commands**.
 > opened on the panel, so the ESP re-requests all variables every 10 min (`net-BT_VARS`).
 > ² The true BLE link state (`binary_sensor`), **not** `power` — that one is the 230 V mains.
 > Out of range the measured sensors go *Unavailable* instead of showing a stale last value.
+> ³ The panel reports the same set of keys regardless of floor plan, so a key that is a dead
+> relay in one caravan is a real light in another (`LIGHT_WASCH` is the toilet light in a
+> Hobby 460 UFE). Just add `key_name: <KEY>` under `switch:` — no C++ change needed.
 
 ## ⚡ What you need
 

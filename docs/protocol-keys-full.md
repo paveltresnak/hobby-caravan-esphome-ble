@@ -43,8 +43,8 @@ Tohle je úplný výpis z **Hobby De Luxe 495 UL** (panel `PANEL_VERSION:V011902
 | `LIGHT_KUECHE2` | kuchyň 2 | ? |
 | `LIGHT_AUSSEN` | venkovní | ✅ |
 | `LIGHT_AMB1` / `_AMB2` / `_AMB3` | ambient 1–3 | ✅ |
-| `LIGHT_DUSCHE` | sprcha | ? |
-| `LIGHT_WASCH` | umývárna | ? |
+| `LIGHT_DUSCHE` | koupelna / sprcha | ✅ (ovládání ověřeno živě) |
+| `LIGHT_WASCH` | umývárna / **WC** | ✗ neosazeno — ale v **Hobby 460 UFE je to světlo WC**, potvrzeno uživatelem ([issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1)) |
 | `LIGHT_ZUSATZL` / `_ZUSATZR` | přídavné L/P | ? |
 | `LIGHT_DIM0`–`LIGHT_DIM4` | stmívače 0–4 | ✅ jen DIM2 (obývák), DIM3 (zadní okno) |
 | `LIGHT_BUSY` | příznak „zaneprázdněno" | — |

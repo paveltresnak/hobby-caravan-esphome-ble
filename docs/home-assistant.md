@@ -34,7 +34,7 @@ Entity s `entity_category: diagnostic` — v HA sedí zvlášť, nepletou se s d
 | `sensor.…_esp_wifi_signal` | WiFi ESP ↔ AP. **Jiná vrstva než BLE** — bývá v pořádku (−60 dBm), i když BLE nefunguje. |
 | `sensor.…_esp_verze` | verze ESPHome + config hash + čas buildu — pozná se, jestli běží to, co je v gitu |
 | `button.…_esp_restart` | restart ESP na dálku |
-| `sensor.…_ble_signal` | ⚠️ **v praxi k ničemu** — RSSI se čte z advertisingu, jenže HobbyConnect po připojení inzerovat přestane, takže hodnota je trvale `unknown`. Ponecháno jen pro případ dlouhého výpadku. |
+| `sensor.…_ble_signal` | RSSI se čte z advertisingu, a připojený HobbyConnect inzerovat přestane → **za normálního provozu je trvale `unknown`**. Zato **když spojení nejede, je to ta nejcennější hodnota, kterou máš** — ukáže, jestli je jednotka slyšet a jak silně (viz [třetí případ](#-třetí-případ-po-ota-se-ble-nechytí-zpátky-status133)). |
 
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje
 > na 0–15 panelu. Po restartu ESP se stav světel může lišit, než přijde první notify.

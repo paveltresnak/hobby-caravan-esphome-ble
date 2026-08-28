@@ -34,7 +34,7 @@ Entity s `entity_category: diagnostic` — v HA sedí zvlášť, nepletou se s d
 | `sensor.…_esp_wifi_signal` | WiFi ESP ↔ AP. **Jiná vrstva než BLE** — bývá v pořádku (−60 dBm), i když BLE nefunguje. |
 | `sensor.…_esp_verze` | verze ESPHome + config hash + čas buildu — pozná se, jestli běží to, co je v gitu |
 | `button.…_esp_restart` | restart ESP na dálku |
-| `sensor.…_ble_signal` | RSSI se čte z advertisingu, a připojený HobbyConnect inzerovat přestane → **za normálního provozu je trvale `unknown`**. Zato **když spojení nejede, je to ta nejcennější hodnota, kterou máš** — ukáže, jestli je jednotka slyšet a jak silně (viz [třetí případ](#-třetí-případ-po-ota-se-ble-nechytí-zpátky-status133)). |
+| `sensor.…_ble_signal` | RSSI se čte z advertisingu, a připojený HobbyConnect inzerovat přestane → **za běžného provozu je trvale `unknown`**. Když ale spojení nejede, hodnoty chodí (2026-08-28 jich přišly desítky, -95 až -100 dBm) — je to jediné, z čeho se pozná, **že jednotka vůbec vysílá**. Co ta čísla znamenají pro schopnost se připojit, ověřené nemáme. |
 
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje
 > na 0–15 panelu. Po restartu ESP se stav světel může lišit, než přijde první notify.
@@ -101,10 +101,12 @@ Pozorováno 2026-08-28. ESP po OTA normálně naběhne — WiFi, API i `uptime` 
 Jednotku přitom **vidí** (`Found device` → `Connecting`), takže to není „mimo dosah"
 ani zaseklý HobbyConnect (ten by hlásil `spojeni = on` bez dat).
 
-**Jak si ověřit, že jde o slabý signál, a ne o poruchu:**
-- `sensor.…_ble_signal` má smysl **právě v odpojeném stavu** (připojené zařízení už
-  neinzeruje). Tady ukazoval **-95 až -100 dBm**, přičemž den předtím se spojení
-  navazovalo při **-92 až -95 dBm** → link je trvale na hraně a pár dB rozhoduje.
+**Co se dá zjistit (a co ne):**
+- `sensor.…_ble_signal` chodí **právě v odpojeném stavu** (připojené zařízení už
+  neinzeruje), takže z něj poznáš, že **jednotka vysílá a je slyšet** — tedy že to není
+  vybitá/mrtvá jednotka. Naměřeno bylo **-95 až -100 dBm**; den předtím, kdy se spojení
+  navázalo, **-92 až -95 dBm**. 🧪 **Že by tenhle rozdíl byl příčinou, prokázané není** —
+  jsou to dva dny měření a spojení se nakonec obnovilo, aniž bychom to doměřili.
 - ⚠️ **Když ESP zrovna zkouší připojení, vzorky RSSI přestanou chodit** — tracker během
   connect scanu ten senzor neplní. Ticho tedy neznamená, že jednotka zmizela.
 - Historie v HA (*Nastavení → Historie*) ukáže, kdy data reálně přestala téct. Pokud

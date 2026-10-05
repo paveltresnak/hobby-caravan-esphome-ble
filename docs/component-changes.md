@@ -84,6 +84,29 @@ do `protocol_framing.h` — je to jediná část komponenty bez ESP-IDF typů, t
 přeložit a otestovat na PC: [`tests/host/`](../tests/host/) (25 testů, `./run_tests.sh`).
 Proti kódu před opravou jich 7 padalo na chybný výsledek a 6 skončilo pádem procesu.
 
+## 9. Výpadek spojení a odmítnutý zápis (1.3.0)
+
+Druhé `esphbot review` — tentokrát na novém PR [esphome#19091](https://github.com/esphome/esphome/pull/19091)
+(23. 9. 2026) — našlo tři věci, které měl i náš fork:
+
+| Bylo | Je |
+|------|-----|
+| při odpojení se nic nenulovalo: spadlo-li spojení uprostřed vícerámcové zprávy, zůstal nastavený příznak „zbytek zprávy ještě přijde" a **po reconnectu se už nic neodeslalo — ani handshake — až do restartu ESP** | `ESP_GATTC_DISCONNECT_EVT`/`CLOSE_EVT` zahodí rozpracovaný rámec, frontu i stav; nové spojení začíná handshakem |
+| příkaz zadaný mimo dosah zůstal ve frontě a **odešel po návratu do dosahu** (třeba přepnutí světla o hodinu později) — a dokonce **před** handshakem | bez spojení se příkaz zahodí s `W` v logu: „Not connected to the caravan, command dropped" |
+| odmítnutý zápis (`esp_ble_gattc_write_char` ≠ `ESP_OK`) se zalogoval a příkaz zmizel | zkusí se znovu (max. 3×); pak se zahodí **celý** příkaz, ne jen jeden kus — druhá půlka rozděleného příkazu by byla pro panel nesmysl |
+| handshake natvrdo `net-BT_ID-c0:ee:fb:90:b0:a7` (adresa telefonu, ze kterého byl protokol odposlechnut) | adresa jde nastavit volbou `bt_id:` u `fendt_caravan:`; **výchozí zůstává `c0:ee:fb:90:b0:a7`** |
+
+> ⚠️ **Vlastní BT adresu ESP panel nepřijme** (ověřeno 5. 10. 2026): po `net-BT_ID-90:70:69:c2:9f:8a`
+> shodí spojení do půl sekundy, ESP se připojuje dokola (35× za pár minut) a data nechodí. Panel
+> nejspíš bere jen spárované adresy — proto výchozí hodnota zůstala; `bt_id:` je pro případ,
+> že si někdo spáruje vlastní.
+
+Stav jednoho spojení (fronta, skládání rámců, pokusy o zápis) je teď třída `PanelLink`
+v `protocol_framing.h`, takže i tohle kryjí [host testy](../tests/host/) — 11 nových,
+celkem 36. Ověřeno i živě na 495 UL (12/12): ovládání světla před i po reconnectu, příkaz
+mimo spojení zahozen a po návratu nepřehrán, jeden handshake, kompletní výpis `BT_START`…`BT_STOP`. Do configu přibyl spínač **„Karavan BLE povoleno"** (`ble_client` switch):
+vypnutím se ESP odpojí a uvolní jediné BLE spojení HobbyConnectu pro oficiální aplikaci.
+
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje
 - stmívače (0–15): **`net-KEY-N`** (univerzální), `cmd-set` jen na DIM2

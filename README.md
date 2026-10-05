@@ -41,16 +41,17 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 | 🔌 Napájení | 230 V připojeno, verze SW | ✅ čtení |
 | 💧 Nádrž vody | hladina v % (0 / 25 / 50 / 75 / 100) | ✅ čtení ¹ |
 | 📶 Spojení s karavanem | BLE připojeno / mimo dosah | ✅ čtení ² |
-| 🩺 Diagnostika ESP | uptime, Wi-Fi signál, verze firmwaru, restart | ✅ |
+| 🩺 Diagnostika ESP | uptime, Wi-Fi signál, verze firmwaru, restart, odpojení BLE (uvolní ho pro oficiální aplikaci) | ✅ |
 
 > ¹ Stupnice `WATER_LEVEL` je **hrubá, po 25 %** (ověřeno při napouštění 2026-07-01), ne litry.
 > Panel měří **on-demand** — čerstvou hodnotu pošle, když se na něm otevře obrazovka vody;
 > ESP proto každých 10 min znovu vyžádá všechny proměnné (`net-BT_VARS`).
 > ² Skutečný stav BLE spojení (`binary_sensor`), **ne** `napájení` — to je 230V síť. Mimo dosah
 > přejdou měřené senzory na *Unavailable* místo zastaralé poslední hodnoty.
-> ³ Panel hlásí stejnou sadu klíčů bez ohledu na půdorys, takže co je v jednom karavanu
-> neosazený vývod, je v jiném reálné světlo (`LIGHT_WASCH` = WC v Hobby 460 UFE). Stačí
-> ve `switch:` uvést `key_name: <KLÍČ>` — zásah do C++ potřeba není.
+> ³ Co je v jednom karavanu neosazený vývod, je v jiném reálné světlo (`LIGHT_WASCH` = WC
+> v Hobby 460 UFE) a jiné modely hlásí i klíče, které 495 UL vůbec nezná (`LIGHT_DECKE`,
+> `LIGHT_THERME` v 540 KMFE). Stačí ve `switch:` uvést `key_name: <KLÍČ>` — zásah do C++
+> potřeba není. Seznam: [`docs/protocol-keys-full.md`](docs/protocol-keys-full.md).
 
 ## ⚡ Co potřebuješ k rozběhnutí
 

@@ -225,6 +225,149 @@ static void variable_with_decoder_stores_value() {
   CHECK(variable.get_value());
 }
 
+// ---------------------------------------------------------------- link session
+//
+// Everything that has to be forgotten when the BLE link drops. The esphbot review of
+// esphome#19091 found that a drop in the middle of a fragmented notification leaves the
+// "rest of the message is coming" state set, so after the reconnect nothing is sent ever
+// again - not even the handshake - until the ESP reboots.
+
+using esphome::fendt_caravan::PanelLink;
+using esphome::fendt_caravan::WriteOutcome;
+
+static const char *const TEST_BT_ID = "01:02:03:04:05:06";
+
+static std::optional<std::string> feed(PanelLink &link, const std::string &frame) {
+  return link.feed(reinterpret_cast<const uint8_t *>(frame.data()), frame.size());
+}
+
+// What the link wants written right now, reported back as accepted by the BLE stack.
+static std::string send_next(PanelLink &link) {
+  const std::string *chunk = link.next();
+  if (chunk == nullptr)
+    return "<nothing>";
+  std::string sent = *chunk;
+  link.on_write(true);
+  return sent;
+}
+
+// Same, but the BLE stack refuses the write.
+static WriteOutcome fail_next(PanelLink &link) {
+  link.next();
+  return link.on_write(false);
+}
+
+// "net-BT_ID-01:02:03:04:05:06" is 27 bytes, so it goes out in two writes.
+static void handshake_announces_the_given_bt_id() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  CHECK_STR(send_next(link), "net-BT_ID-01:02:0@");
+  CHECK_STR(send_next(link), "3:04:05:06");
+  CHECK_STR(send_next(link), "net-BT_VARS");
+  CHECK_STR(send_next(link), "<nothing>");
+}
+
+static void nothing_is_sent_before_the_link_is_started() {
+  PanelLink link;
+  CHECK(!link.queue("cmd-tgl:LIGHT_KUECHE"));
+  CHECK_STR(send_next(link), "<nothing>");
+}
+
+// A light switched in HA while the caravan was out of reach must not toggle an hour later.
+static void command_given_while_disconnected_is_not_replayed() {
+  PanelLink link;
+  link.queue("cmd-tgl:LIGHT_KUECHE");
+  link.start(TEST_BT_ID);
+  send_next(link);
+  send_next(link);
+  CHECK_STR(send_next(link), "net-BT_VARS");
+  CHECK_STR(send_next(link), "<nothing>");
+}
+
+static void queued_commands_are_dropped_on_disconnect() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  CHECK(link.queue("cmd-tgl:LIGHT_KUECHE"));
+  link.stop();
+  link.start(TEST_BT_ID);
+  send_next(link);
+  send_next(link);
+  CHECK_STR(send_next(link), "net-BT_VARS");
+  CHECK_STR(send_next(link), "<nothing>");
+}
+
+static void nothing_is_sent_while_a_message_is_still_arriving() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  feed(link, "TEMP_IN: 21,@");
+  CHECK(link.next() == nullptr);
+  CHECK_STR(feed(link, "5^C").value_or("<incomplete>"), "TEMP_IN: 21,5^C");
+  CHECK(link.next() != nullptr);
+}
+
+static void fragment_cut_by_disconnect_does_not_block_the_next_session() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  feed(link, "TEMP_IN: 21,@");
+  link.stop();
+  link.start(TEST_BT_ID);
+  CHECK_STR(send_next(link), "net-BT_ID-01:02:0@");
+}
+
+static void fragment_cut_by_disconnect_is_not_glued_to_the_next_message() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  feed(link, "TEMP_IN: 21,@");
+  link.stop();
+  link.start(TEST_BT_ID);
+  CHECK_STR(feed(link, "LINE_EN:1").value_or("<incomplete>"), "LINE_EN:1");
+}
+
+// Two toggles of the same light in a row are two commands; both have to go out, whole.
+static void identical_commands_are_both_sent() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  send_next(link);
+  send_next(link);
+  send_next(link);
+  link.queue("cmd-tgl:LIGHT_KUECHE");  // 20 bytes, two writes
+  link.queue("cmd-tgl:LIGHT_KUECHE");
+  CHECK_STR(send_next(link), "cmd-tgl:LIGHT_KUE@");
+  CHECK_STR(send_next(link), "CHE");
+  CHECK_STR(send_next(link), "cmd-tgl:LIGHT_KUE@");
+  CHECK_STR(send_next(link), "CHE");
+  CHECK_STR(send_next(link), "<nothing>");
+}
+
+static void refused_write_is_retried() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  CHECK(fail_next(link) == WriteOutcome::RETRY);
+  CHECK_STR(send_next(link), "net-BT_ID-01:02:0@");
+}
+
+// A write that keeps failing must not jam the queue, and the second half of BT_ID sent on
+// its own would be garbage to the panel - so the whole command goes.
+static void command_refused_three_times_is_dropped_whole() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  CHECK(fail_next(link) == WriteOutcome::RETRY);
+  CHECK(fail_next(link) == WriteOutcome::RETRY);
+  CHECK(fail_next(link) == WriteOutcome::GAVE_UP);
+  CHECK_STR(send_next(link), "net-BT_VARS");
+}
+
+static void attempts_are_counted_per_chunk() {
+  PanelLink link;
+  link.start(TEST_BT_ID);
+  fail_next(link);
+  fail_next(link);
+  CHECK_STR(send_next(link), "net-BT_ID-01:02:0@");
+  CHECK(fail_next(link) == WriteOutcome::RETRY);
+  CHECK(fail_next(link) == WriteOutcome::RETRY);
+  CHECK_STR(send_next(link), "3:04:05:06");
+}
+
 // ------------------------------------------------------------------------ main
 
 struct TestCase {
@@ -258,6 +401,19 @@ static const TestCase TESTS[] = {
     {"int_str_out_of_range_returns_empty", int_str_out_of_range_returns_empty},
     {"variable_without_decoder_does_not_crash", variable_without_decoder_does_not_crash},
     {"variable_with_decoder_stores_value", variable_with_decoder_stores_value},
+    {"handshake_announces_the_given_bt_id", handshake_announces_the_given_bt_id},
+    {"nothing_is_sent_before_the_link_is_started", nothing_is_sent_before_the_link_is_started},
+    {"command_given_while_disconnected_is_not_replayed", command_given_while_disconnected_is_not_replayed},
+    {"queued_commands_are_dropped_on_disconnect", queued_commands_are_dropped_on_disconnect},
+    {"nothing_is_sent_while_a_message_is_still_arriving", nothing_is_sent_while_a_message_is_still_arriving},
+    {"fragment_cut_by_disconnect_does_not_block_the_next_session",
+     fragment_cut_by_disconnect_does_not_block_the_next_session},
+    {"fragment_cut_by_disconnect_is_not_glued_to_the_next_message",
+     fragment_cut_by_disconnect_is_not_glued_to_the_next_message},
+    {"identical_commands_are_both_sent", identical_commands_are_both_sent},
+    {"refused_write_is_retried", refused_write_is_retried},
+    {"command_refused_three_times_is_dropped_whole", command_refused_three_times_is_dropped_whole},
+    {"attempts_are_counted_per_chunk", attempts_are_counted_per_chunk},
 };
 
 int main(int argc, char **argv) {

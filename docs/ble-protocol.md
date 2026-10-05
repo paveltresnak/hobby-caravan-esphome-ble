@@ -14,7 +14,7 @@ Pozn.: konkrétní výrobní číslo panelu / LED driveru ani typ BLE čipu neuv
 | MAC | `XX:XX:XX:XX:XX:XX` (najdi si svůj — sken; náš měl příznak random/private, přesto stabilní) |
 | Service UUID | `C7841029-FE7C-4894-8532-F97908EF1AE4` |
 | Characteristic | `0x0001` — **NOTIFY + WRITE** |
-| Po připojení | komponenta pošle `net-BT_ID-…` a `net-BT_VARS` → jednotka začne notifikovat |
+| Po připojení | komponenta pošle `net-BT_ID-c0:ee:fb:90:b0:a7` a `net-BT_VARS` → jednotka začne notifikovat (adresa jde změnit `bt_id:`; **neznámou panel odmítne** a shodí spojení) |
 
 ## Formát rámce
 

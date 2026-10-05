@@ -42,7 +42,7 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 | 🔌 Stromversorgung | 230 V verbunden, Firmware-Version | ✅ lesen |
 | 💧 Frischwassertank | Füllstand in % (0 / 25 / 50 / 75 / 100) | ✅ lesen ¹ |
 | 📶 Verbindung zum Wohnwagen | BLE verbunden / außer Reichweite | ✅ lesen ² |
-| 🩺 ESP-Diagnose | Uptime, WLAN-Signal, Firmware-Version, Neustart | ✅ |
+| 🩺 ESP-Diagnose | Uptime, WLAN-Signal, Firmware-Version, Neustart, BLE trennen (frei für die offizielle App) | ✅ |
 
 > ¹ Die Skala von `WATER_LEVEL` ist **grob in 25-%-Schritten** (beim Befüllen verifiziert,
 > 01.07.2026), keine Liter. Das Panel misst **nur on demand** — einen frischen Wert sendet es,
@@ -50,9 +50,11 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 > Variablen neu an (`net-BT_VARS`).
 > ² Der echte BLE-Verbindungsstatus (`binary_sensor`), **nicht** `Stromversorgung` — das ist
 > das 230-V-Netz. Außer Reichweite werden die Messwerte *Unavailable* statt veralteter Werte.
-> ³ Das Panel meldet dieselben Schlüssel unabhängig vom Grundriss: was im einen Wohnwagen ein
-> unbelegter Ausgang ist, ist im anderen ein echtes Licht (`LIGHT_WASCH` = WC-Licht im Hobby
-> 460 UFE). Es genügt `key_name: <SCHLÜSSEL>` unter `switch:` — kein C++-Eingriff nötig.
+> ³ Was im einen Wohnwagen ein unbelegter Ausgang ist, ist im anderen ein echtes Licht
+> (`LIGHT_WASCH` = WC-Licht im Hobby 460 UFE), und andere Modelle melden sogar Schlüssel, die
+> der 495 UL gar nicht kennt (`LIGHT_DECKE`, `LIGHT_THERME` im 540 KMFE). Es genügt
+> `key_name: <SCHLÜSSEL>` unter `switch:` — kein C++-Eingriff nötig. Liste:
+> [`docs/protocol-keys-full.md`](docs/protocol-keys-full.md).
 
 ## ⚡ Was du brauchst
 

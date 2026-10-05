@@ -36,6 +36,7 @@ Překládá se s `-fno-exceptions` (jako na ESP-IDF) a `-fstack-protector-all`.
 | Soubor | Co se testuje |
 |--------|---------------|
 | `../../esphome/my_components/fendt_caravan/protocol_framing.h` | dělení příkazu po 17 B s `@`, skládání víceRámcových notifikací, rámec delší než MTU 23 |
+| `.../protocol_framing.h` — `PanelLink` | handshake s danou `BT_ID`, nic se neposílá bez spojení ani uprostřed přicházející zprávy, odpojení zahodí rozpracovaný rámec i frontu, odmítnutý zápis 3× a pak celý příkaz pryč |
 | `.../sensor/device_decoders.cpp` | `decode_temperature`, `decode_number` (`" 13,9 V"`, `"25,5^C"`), `decode_int_str` mimo rozsah, prázdné a nesmyslné hodnoty |
 | `.../variable.h` | `decode()` u klíče registrovaného bez dekodéru (`HS_KEY`) |
 

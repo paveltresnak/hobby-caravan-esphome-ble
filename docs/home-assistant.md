@@ -35,6 +35,7 @@ Entity s `entity_category: diagnostic` — v HA sedí zvlášť, nepletou se s d
 | `sensor.…_esp_wifi_signal` | WiFi ESP ↔ AP. **Jiná vrstva než BLE** — bývá v pořádku (−60 dBm), i když BLE nefunguje. |
 | `sensor.…_esp_verze` | verze ESPHome + config hash + čas buildu — pozná se, jestli běží to, co je v gitu |
 | `button.…_esp_restart` | restart ESP na dálku |
+| `switch.…_ble_povoleno` (od 1.3.0, `entity_category: config`) | **vypnuto = ESP se od karavanu odpojí a znovu se nepřipojí**, dokud se zase nezapne. HobbyConnect drží jen jedno BLE spojení → takhle se uvolní pro **oficiální aplikaci** v telefonu. Hodí se i k vyzkoušení chování při výpadku spojení. Po restartu ESP je zase zapnuto. |
 | `sensor.…_ble_signal` | RSSI se čte z advertisingu, a připojený HobbyConnect inzerovat přestane → **za běžného provozu je trvale `unknown`**. Když ale spojení nejede, hodnoty chodí (2026-08-28 jich přišly desítky, -95 až -100 dBm) — je to jediné, z čeho se pozná, **že jednotka vůbec vysílá**. Co ta čísla znamenají pro schopnost se připojit, ověřené nemáme. |
 
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje
@@ -50,12 +51,15 @@ Když karavan **není v dosahu** (BLE odpojeno déle než 20 s — debounce `del
 - měřené senzory (teploty, baterie, voda) → **Unavailable** (ESP na `on_disconnect`
   publikuje `NaN`), `napajeni` se vyprázdní → v HA není vidět zastaralá „poslední"
   hodnota;
-- ovládací entity sice v UI zůstanou, ale **příkazy se zahodí** (komponenta zapisuje
-  jen ve stavu `ESTABLISHED`);
+- ovládací entity sice v UI zůstanou, ale **příkazy se zahodí** — v logu
+  `Not connected to the caravan, command dropped: …`. Od 1.3.0 se **ani po návratu do
+  dosahu nepošlou** (dřív čekaly ve frontě a světlo se mohlo přepnout o hodinu později);
 - dashboard ukáže **badge „Karavan BLE"** + podmíněnou kartu *„Karavan není v dosahu…"*.
 
 Po návratu do dosahu se vše **doplní automaticky** (jednotka po připojení vysype
-všechny klíče; `on_connect` navíc vyžádá `net-BT_VARS`).
+všechny klíče; `on_connect` navíc vyžádá `net-BT_VARS`). Od 1.3.0 se při odpojení zahodí
+i napůl přijatá zpráva — dřív mohl výpadek uprostřed ní **zablokovat odesílání až do
+restartu ESP** (viz [`component-changes.md` §9](component-changes.md)).
 
 > Řešeno čistě standardními prostředky ESPHome/HA: template `binary_sensor` řízený
 > `ble_client` triggery `on_connect`/`on_disconnect`, `delayed_off` debounce, publikace

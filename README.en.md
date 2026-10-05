@@ -40,16 +40,17 @@ mobile app and added **control (WRITE) commands**.
 | 🔌 Power | 230 V connected, firmware version | ✅ read |
 | 💧 Fresh water tank | level in % (0 / 25 / 50 / 75 / 100) | ✅ read ¹ |
 | 📶 Caravan link | BLE connected / out of range | ✅ read ² |
-| 🩺 ESP diagnostics | uptime, Wi-Fi signal, firmware version, restart | ✅ |
+| 🩺 ESP diagnostics | uptime, Wi-Fi signal, firmware version, restart, BLE disconnect (frees it for the official app) | ✅ |
 
 > ¹ The `WATER_LEVEL` scale is **coarse, in 25 % steps** (verified while filling, 2026-07-01),
 > not litres. The panel measures **on demand** — a fresh value is sent when the water screen is
 > opened on the panel, so the ESP re-requests all variables every 10 min (`net-BT_VARS`).
 > ² The true BLE link state (`binary_sensor`), **not** `power` — that one is the 230 V mains.
 > Out of range the measured sensors go *Unavailable* instead of showing a stale last value.
-> ³ The panel reports the same set of keys regardless of floor plan, so a key that is a dead
-> relay in one caravan is a real light in another (`LIGHT_WASCH` is the toilet light in a
-> Hobby 460 UFE). Just add `key_name: <KEY>` under `switch:` — no C++ change needed.
+> ³ A key that is a dead relay in one caravan is a real light in another (`LIGHT_WASCH` is the
+> toilet light in a Hobby 460 UFE), and other models report keys a 495 UL does not have at all
+> (`LIGHT_DECKE`, `LIGHT_THERME` in a 540 KMFE). Just add `key_name: <KEY>` under `switch:` —
+> no C++ change needed. List: [`docs/protocol-keys-full.md`](docs/protocol-keys-full.md).
 
 ## ⚡ What you need
 

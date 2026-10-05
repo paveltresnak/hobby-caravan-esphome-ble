@@ -20,27 +20,32 @@ void FendtCaravan::dump_config() {
 }
 
 void FendtCaravan::loop() {
-  if (!this->command_enabled_)
-    return;
-
   if (this->parent()->state() != espbt::ClientState::ESTABLISHED)
     return;
 
   uint32_t time_stamp = App.get_loop_component_start_time();
-  if (!this->commands_.empty() && (time_stamp - this->last_command_time_) >= WAIT_COMMAND && !this->wait_buffer_) {
-    std::string cmd = this->commands_.at(0);
-    auto status = esp_ble_gattc_write_char(this->parent()->get_gattc_if(), this->parent()->get_conn_id(),
-                                           this->char_handle_, cmd.length(), (uint8_t *) cmd.c_str(),
-                                           ESP_GATT_WRITE_TYPE_RSP, ESP_GATT_AUTH_REQ_NONE);
-    if (status) {
-      ESP_LOGE(TAG, "Writing command failed (%d)", status);
-    }
+  if ((time_stamp - this->last_command_time_) < WAIT_COMMAND)
+    return;
+  const std::string *next = this->link_.next();
+  if (next == nullptr)
+    return;
 
-    ESP_LOGD(TAG, "Command sent: %s, %d", cmd.c_str(), cmd.length());
-    this->last_command_time_ = time_stamp;
-    // drop the command we just sent, not every identical one: two toggles of the same
-    // switch in a row are two separate commands and both have to go out
-    this->commands_.erase(this->commands_.begin());
+  std::string chunk = *next;
+  auto status = esp_ble_gattc_write_char(this->parent()->get_gattc_if(), this->parent()->get_conn_id(),
+                                         this->char_handle_, chunk.length(), (uint8_t *) chunk.c_str(),
+                                         ESP_GATT_WRITE_TYPE_RSP, ESP_GATT_AUTH_REQ_NONE);
+  this->last_command_time_ = time_stamp;
+  switch (this->link_.on_write(status == ESP_OK)) {
+    case WriteOutcome::SENT:
+      ESP_LOGD(TAG, "Command sent: %s, %u", chunk.c_str(), (unsigned) chunk.length());
+      break;
+    case WriteOutcome::RETRY:
+      ESP_LOGW(TAG, "Writing command failed (%d), retrying: %s", status, chunk.c_str());
+      break;
+    case WriteOutcome::GAVE_UP:
+      ESP_LOGE(TAG, "Writing command failed (%d) %u times, dropped: %s", status, (unsigned) MAX_WRITE_ATTEMPTS,
+               chunk.c_str());
+      break;
   }
 }
 
@@ -79,28 +84,29 @@ void FendtCaravan::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
         break;
       }
 
-      this->add_command_("net-BT_ID-c0:ee:fb:90:b0:a7");
-      this->add_command_("net-BT_VARS");
-      this->command_enabled_ = true;
+      ESP_LOGD(TAG, "Handshake as %s", this->bt_id_.c_str());
+      this->link_.start(this->bt_id_);
       break;
     }
     case ESP_GATTC_NOTIFY_EVT:
       if (param->notify.handle == this->char_handle_) {
-        auto message = feed_notification_chunk(this->last_response_, param->notify.value, param->notify.value_len);
-        this->wait_buffer_ = !message.has_value();
+        auto message = this->link_.feed(param->notify.value, param->notify.value_len);
         if (message.has_value()) {
           ESP_LOGD(TAG, "Notified value: %s", message->c_str());
           this->on_data_received_(*message);
         }
       }
       break;
+    case ESP_GATTC_DISCONNECT_EVT:
+    case ESP_GATTC_CLOSE_EVT:
+      // a fragment cut off by the drop or a stale command must not survive into the next
+      // session; the next service discovery starts a new one with the handshake
+      this->link_.stop();
+      this->char_handle_ = 0;
+      break;
     default:
       break;
   }
-}
-void FendtCaravan::add_command_(const std::string &cmd) {
-  for (const auto &chunk : split_command_chunks(cmd))
-    this->commands_.push_back(chunk);
 }
 
 void FendtCaravan::on_data_received_(const std::string &data) {
@@ -119,7 +125,8 @@ void FendtCaravan::on_data_received_(const std::string &data) {
 
 void FendtCaravan::on_command_send(const std::string &command) {
   ESP_LOGV(TAG, "on_command_send called. Command: %s", command.c_str());
-  this->add_command_(command);
+  if (!this->link_.queue(command))
+    ESP_LOGW(TAG, "Not connected to the caravan, command dropped: %s", command.c_str());
 }
 
 }  // namespace esphome::fendt_caravan

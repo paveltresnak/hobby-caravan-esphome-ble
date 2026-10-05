@@ -7,6 +7,8 @@ Tohle je úplný výpis z **Hobby De Luxe 495 UL** (panel `PANEL_VERSION:V011902
 > ⚠️ Jednotka hlásí **všechny** klíče, které firmware zná — i pro výbavu, kterou
 > konkrétní karavan **nemá** (hodnota bývá `0` / `Off` / `*_AVAILABLE:0`). V 495 UL
 > jsou reálně zapojené jen některé (viz [`ble-protocol.md`](ble-protocol.md)).
+> Jiné modely ale můžou hlásit i klíče, které v tomhle výpisu **vůbec nejsou** — viz
+> [Klíče z jiných modelů](#-klíče-z-jiných-modelů-hlášené-uživateli).
 
 ## Identifikace / systém
 | Klíč | Hodnota v dumpu | Pozn. |
@@ -48,6 +50,21 @@ Tohle je úplný výpis z **Hobby De Luxe 495 UL** (panel `PANEL_VERSION:V011902
 | `LIGHT_ZUSATZL` / `_ZUSATZR` | přídavné L/P | ? |
 | `LIGHT_DIM0`–`LIGHT_DIM4` | stmívače 0–4 | ✅ jen DIM2 (obývák), DIM3 (zadní okno) |
 | `LIGHT_BUSY` | příznak „zaneprázdněno" | — |
+
+### 🔎 Klíče z jiných modelů (hlášené uživateli)
+
+V dumpu 495 UL **nejsou** — hlásí je panel jiného karavanu (zjištěno z jejich logu při
+fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `key_name`.
+
+| Klíč | Model | Co to je | Zdroj |
+|------|-------|----------|-------|
+| `LIGHT_DECKE` | Hobby 540 KMFE | stropní světlo | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_THERME` | Hobby 540 KMFE | bojler — **místo** `THERME_ON` z 495 UL | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_WAND` | (SW `V012000`) | světlo, `0`/`1` — tahle verze nevystavuje `LIGHT_DIMx` | [hobby-caravan-pi#1](https://github.com/AndreasKirsten79/hobby-caravan-pi/issues/1) |
+
+> ⚠️ Sadu klíčů tedy určuje **model a verze firmwaru**, ne jen výbava. Když ti něco
+> chybí, pusť `esphome logs`, přepni to fyzicky v karavanu a hledej řádek
+> `Notified value: <KLÍČ>:<hodnota>`.
 
 ## 🧊 Lednice
 `FRIDGE_AVAILABLE` `1`, `FRIDGE_ON_OFF` `0`, `FRIDGE_MODE` `0`, `FRIDGE_SOURCE` `1`,

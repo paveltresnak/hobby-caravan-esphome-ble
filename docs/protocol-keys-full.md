@@ -58,9 +58,19 @@ fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `k
 
 | Klíč | Model | Co to je | Zdroj |
 |------|-------|----------|-------|
-| `LIGHT_DECKE` | Hobby 540 KMFE | stropní světlo | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
-| `LIGHT_THERME` | Hobby 540 KMFE | bojler — **místo** `THERME_ON` z 495 UL | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
-| `LIGHT_WAND` | (SW `V012000`) | světlo, `0`/`1` — tahle verze nevystavuje `LIGHT_DIMx` | [hobby-caravan-pi#1](https://github.com/AndreasKirsten79/hobby-caravan-pi/issues/1) |
+| `LIGHT_DECKE` | Hobby 540 KMFE (SW `V011900`) | stropní světlo | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_THERME` | Hobby 540 KMFE (SW `V011900`) | bojler — **místo** `THERME_ON` z 495 UL | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_WAND` | (SW `V012000`); Hobby 540 KMFE (SW `V011900`) | světlo, `0`/`1` — tahle verze nevystavuje `LIGHT_DIMx`; v 540 KMFE „Ambiente Eltern“ (ambient ložnice) | [hobby-caravan-pi#1](https://github.com/AndreasKirsten79/hobby-caravan-pi/issues/1), [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_BETTR` | Hobby 540 KMFE (SW `V011900`) | postel vpravo — v 495 UL je to `LIGHT_DIM0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_BETTL` | Hobby 540 KMFE (SW `V011900`) | postel vlevo — v 495 UL je to `LIGHT_DIM1` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+
+> 🧪 **Ovládání v 540 KMFE (SW `V011900`)**: všech pět klíčů výše uživatel spíná
+> `net-<KLÍČ>-15` (zap) / `net-<KLÍČ>-0` (vyp) — **nastavení stavu, ne přepnutí**
+> (`cmd-tgl`), ověřeno jen jeho template switchi, bez zpětného čtení stavu.
+> `15` je horní mez stmívací škály `LIGHT_DIMx` (0–15) → světla v tomhle firmwaru
+> nejspíš mají vlastní jméno místo `DIMx` a jdou i stmívat (neověřeno). Jakou hodnotu
+> panel u těch klíčů **hlásí**, zatím nevíme — když `15`, switch komponenty
+> (`decode_bool` bere jen `1`/`on`/`true`) by zapnuté světlo ukázal jako vypnuté.
 
 > ⚠️ Sadu klíčů tedy určuje **model a verze firmwaru**, ne jen výbava. Když ti něco
 > chybí, pusť `esphome logs`, přepni to fyzicky v karavanu a hledej řádek

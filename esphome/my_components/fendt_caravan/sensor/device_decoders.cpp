@@ -4,7 +4,17 @@
 namespace esphome::fendt_caravan {
 static const char *const TAG = "FC.COD";
 
+// The panel sends some keys without a value (IBS0_UBAT, IBS0_IBAT, LATITUDE...) when it
+// has nothing to report. That is not malformed data, so it must not be logged as an error.
+static bool is_blank(const std::string &value) {
+  return value.find_first_not_of(" 	") == std::string::npos;
+}
+
 float DeviceDecoders::parse_leading_float(const std::string &value) {
+  if (is_blank(value)) {
+    ESP_LOGV(TAG, "Empty value");
+    return NAN;
+  }
   const char *begin = value.c_str();
   char *end = nullptr;
   float result = std::strtof(begin, &end);
@@ -54,6 +64,10 @@ float DeviceDecoders::decode_number(const std::string &data) {
 }
 
 int DeviceDecoders::decode_int(const std::string &data) {
+  if (is_blank(data)) {
+    ESP_LOGV(TAG, "Empty value");
+    return 0;
+  }
   auto result = parse_leading_int(data);
   if (!result) {
     ESP_LOGE(TAG, "Data parse error. Data: %s", data.c_str());
@@ -85,6 +99,10 @@ time_t DeviceDecoders::decode_time(const std::string &data) {
   return ret;
 }
 std::string DeviceDecoders::decode_int_str(const std::string &data, const std::vector<std::string> &list) {
+  if (is_blank(data)) {
+    ESP_LOGV(TAG, "Empty value");
+    return "";
+  }
   auto result = parse_leading_int(data);
   if (!result) {
     ESP_LOGE(TAG, "Data parse error. Data: %s", data.c_str());

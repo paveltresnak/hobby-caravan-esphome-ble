@@ -209,6 +209,25 @@ static void int_str_out_of_range_returns_empty() {
   CHECK_STR(DeviceDecoders::decode_int_str("7", {"Auto", "Gas", "12V", "230V"}), "");
 }
 
+// The panel sends some keys empty when it has nothing to report ("IBS0_UBAT:" with the
+// battery sensor present but idle). The value is unavailable, but that is not a parse error.
+static void empty_values_are_not_logged_as_errors() {
+  int before = esphome_test_error_count();
+  CHECK(std::isnan(DeviceDecoders::decode_voltage("")));
+  CHECK(std::isnan(DeviceDecoders::decode_number("  ")));
+  CHECK(std::isnan(DeviceDecoders::decode_temperature("^C")));
+  CHECK(DeviceDecoders::decode_int("") == 0);
+  CHECK_STR(DeviceDecoders::decode_int_str(" ", {"Auto", "Gas"}), "");
+  CHECK(esphome_test_error_count() == before);
+}
+
+static void garbage_is_still_logged_as_error() {
+  int before = esphome_test_error_count();
+  CHECK(std::isnan(DeviceDecoders::decode_number("n/a")));
+  CHECK(DeviceDecoders::decode_int("n/a") == 0);
+  CHECK(esphome_test_error_count() == before + 2);
+}
+
 // ------------------------------------------------------------------- variables
 
 // HS_KEY and HS_KEY_LONG are registered without a decoder, but the panel does send them.
@@ -399,6 +418,8 @@ static const TestCase TESTS[] = {
     {"int_str_maps_index_to_text", int_str_maps_index_to_text},
     {"int_str_tolerates_padding", int_str_tolerates_padding},
     {"int_str_out_of_range_returns_empty", int_str_out_of_range_returns_empty},
+    {"empty_values_are_not_logged_as_errors", empty_values_are_not_logged_as_errors},
+    {"garbage_is_still_logged_as_error", garbage_is_still_logged_as_error},
     {"variable_without_decoder_does_not_crash", variable_without_decoder_does_not_crash},
     {"variable_with_decoder_stores_value", variable_with_decoder_stores_value},
     {"handshake_announces_the_given_bt_id", handshake_announces_the_given_bt_id},

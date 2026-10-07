@@ -78,6 +78,7 @@ pokračuje v přepsané podobě, náš fork ty chyby ale zdědil — opraveny js
 | chunkování příkazů brala každý kus od indexu 0 (a indexy byly `int8_t`) | `split_command_chunks()` posouvá offset, funguje i přes 127 B |
 | odeslaný příkaz se z fronty mazal přes `remove()` = **všechny** shodné najednou | maže se jen odeslaná položka, takže dva stejné toggly za sebou projdou oba |
 | `decode_int`/`decode_int_str`/`decode_voltage` četly hodnotu přes `from_chars`, který **vyžaduje shodu celého řetězce** → panel posílá `TEMP_IN_OFFSET:  0` nebo `13,9 V` a hodnota tiše spadla na 0 (+ `Data parse error` v logu při každém připojení) | stejné shovívavé parsování jako u čísel (`strtol`/`strtof` + kontrola, že se něco přečetlo) |
+| prázdná hodnota se logovala jako `Data parse error` — panel ale takhle běžně posílá klíče, ke kterým nemá co hlásit (`IBS0_UBAT:`, `IBS0_IBAT:` u nečinného čidla baterie, hlášeno z 540 KMFE) | výsledek stejný (`NAN` → v HA *Unavailable*, u celých čísel `0` / `""`), ale bez `E` v logu; chybu hlásí jen nesmyslná hodnota |
 
 Framing (chunkování příkazů + skládání notifikací) je kvůli testovatelnosti vytažený
 do `protocol_framing.h` — je to jediná část komponenty bez ESP-IDF typů, takže se dá

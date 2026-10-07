@@ -63,8 +63,16 @@ fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `k
 | `LIGHT_WAND` | (SW `V012000`); Hobby 540 KMFE (SW `V011900`) | světlo, `0`/`1` — tahle verze nevystavuje `LIGHT_DIMx`; v 540 KMFE „Ambiente Eltern“ (ambient ložnice) | [hobby-caravan-pi#1](https://github.com/AndreasKirsten79/hobby-caravan-pi/issues/1), [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 | `LIGHT_BETTR` | Hobby 540 KMFE (SW `V011900`) | postel vpravo — v 495 UL je to `LIGHT_DIM0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 | `LIGHT_BETTL` | Hobby 540 KMFE (SW `V011900`) | postel vlevo — v 495 UL je to `LIGHT_DIM1` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_ZUSATZM` | Hobby 540 KMFE (SW `V011900`) | přídavné „M" (střed?) — jen v dumpu, význam neznámý | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_FUSSB` | Hobby 540 KMFE (SW `V011900`) | nejspíš osvětlení podlahy (*Fußboden*) — jen v dumpu, neověřeno | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 
-> 🧪 **Ovládání v 540 KMFE (SW `V011900`)**: všech pět klíčů výše uživatel spíná
+> 📋 **Dump 540 KMFE** (`PANEL_VERSION` `V011902` — stejný panel jako 495 UL, `SOFTWARE_VERSION`
+> `V011900`): světla v pořadí `DECKE`, `WAND`, `BETTL`, `BETTR`, `DUSCHE`, `WASCH`, `AMB1`–`3`,
+> `ZUSATZL`, `ZUSATZM`, `ZUSATZR`, `KUECHE`, `AUSSEN`, `THERME`, `FUSSB` — **žádné `LIGHT_DIMx`**
+> (stejně jako `V012000`). Stropní světlo, spoty u stolu a obě světla u postele uživatel
+> stmívá podržením tlačítka na panelu, ale **stmívání nevyvolá žádný notify**.
+
+> 🧪 **Ovládání v 540 KMFE (SW `V011900`)**: prvních pět klíčů výše uživatel spíná
 > `net-<KLÍČ>-15` (zap) / `net-<KLÍČ>-0` (vyp) — **nastavení stavu, ne přepnutí**
 > (`cmd-tgl`), ověřeno jen jeho template switchi, bez zpětného čtení stavu.
 > `15` je horní mez stmívací škály `LIGHT_DIMx` (0–15) → světla v tomhle firmwaru

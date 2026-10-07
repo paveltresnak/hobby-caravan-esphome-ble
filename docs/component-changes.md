@@ -108,6 +108,19 @@ celkem 36. Ověřeno i živě na 495 UL (12/12): ovládání světla před i po 
 mimo spojení zahozen a po návratu nepřehrán, jeden handshake, kompletní výpis `BT_START`…`BT_STOP`. Do configu přibyl spínač **„Karavan BLE povoleno"** (`ble_client` switch):
 vypnutím se ESP odpojí a uvolní jediné BLE spojení HobbyConnectu pro oficiální aplikaci.
 
+## 10. Klima Dometic FreshJet — platforma `climate` (jen čtení)
+
+Nová platforma `climate/` (`FendtDometicClimate`, `type: dometic_freshjet`). Pověsí se na
+proměnné `AC_DOM_FJ_ENABLE`/`_MODE`/`_FAN_SPEED`/`_TARGETTEMP` (dosud jen decode-only
+v katalogu) a na `TEMP_IN` jako aktuální teplotu. Jedna změna na klimě přijde jako dávka
+klíčů (změna módu pošle i ventilátor a teplotu) → stav se publikuje jednou, 100 ms po
+posledním klíči. Dokud panel neřekl, jestli je klima zapnutá, nepublikuje se nic.
+`control()` nic neposílá — formát příkazů není ověřený — jen zaloguje varování a vrátí
+v HA poslední stav z panelu. Kód je celý pod `#ifdef USE_CLIMATE`, takže konfigurace bez
+`climate:` (náš 495 UL) se překládá beze změny. Ověřeno překladem obou variant v ESPHome
+2026.9.1; živě neověřeno (Dometic nemáme) — data z logu Hobby 540 KMFE, viz
+[`protocol-keys-full.md`](protocol-keys-full.md).
+
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje
 - stmívače (0–15): **`net-KEY-N`** (univerzální), `cmd-set` jen na DIM2

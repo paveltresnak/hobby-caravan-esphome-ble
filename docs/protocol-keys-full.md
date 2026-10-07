@@ -124,7 +124,8 @@ Každou změnu z panelu/ovladače panel pošle hned:
 | `AC_DOM_FJ_FAN_SPEED` | `Auto`, `Slow`, `Med`, `Fast` (+ `Max` dle BastyJuice) | |
 
 Vlastní teplotu klima nehlásí → pro `climate` entitu by byla aktuální teplota `TEMP_IN`.
-**Zápis přes BLE zatím neověřen** — viz níže sériové příkazy.
+**Zápis přes BLE zatím neověřen** — viz níže sériové příkazy. Entita `climate` jen pro
+čtení: `type: dometic_freshjet`, viz [`home-assistant.md`](home-assistant.md).
 ⚠️ `AC_TRUMA_AVAILABLE` jednou přišlo s nečitelným bajtem (`\xc1`), pak `1` / `_TYPE` `10` — Trumu uživatel nemá.
 
 ### 🔌 Nezávislý zdroj: CI-Bus přes RS232 ([BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity), od dubna 2026)

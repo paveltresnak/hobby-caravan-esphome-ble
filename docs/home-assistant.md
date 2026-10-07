@@ -41,6 +41,33 @@ Entity s `entity_category: diagnostic` — v HA sedí zvlášť, nepletou se s d
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje
 > na 0–15 panelu. Po restartu ESP se stav světel může lišit, než přijde první notify.
 
+### Klima Dometic FreshJet (jen čtení)
+
+Pro karavany s vestavěnou klimou Dometic FreshJet na sběrnici (viděno v Hobby 540 KMFE,
+SW `V011900`; v 495 UL není). Entita `climate` ukazuje, co panel hlásí — zapnuto/vypnuto,
+mód, ventilátor, cílovou teplotu — a jako aktuální teplotu vnitřní čidlo panelu (`TEMP_IN`),
+protože klima vlastní teplotu nehlásí.
+
+```yaml
+climate:
+  - platform: fendt_caravan
+    parent_id: hobby_unit        # id senzoru typu mcu_device
+    type: dometic_freshjet
+    name: "Karavan klima"
+```
+
+| Panel (`AC_DOM_FJ_*`) | Home Assistant |
+|---|---|
+| `ENABLE` `Off` | mód *Off* |
+| `MODE` `Cool` / `Heat` / `Fan` / `Auto` | *Cool* / *Heat* / *Fan only* / *Auto* |
+| `FAN_SPEED` `Auto` / `Slow` / `Med` / `Fast` | *Auto* / *Low* / *Medium* / *High* |
+| `TARGETTEMP` | cílová teplota (celé °C, rozsah v HA 16–31, jde zúžit přes `visual:`) |
+
+⚠️ **Ovládat z HA ji zatím nejde.** Formát BLE příkazů pro klimu není ověřený; změnu
+z HA komponenta jen zaloguje (`Controlling the Dometic A/C over BLE is not supported yet`)
+a vrátí v HA stav, který hlásí panel. Rychlost `Max` (zná ji sériová strana sběrnice, přes
+BLE ji zatím nikdo neviděl) se zobrazí jako prázdná + varování v logu.
+
 ## Dostupnost & „mimo dosah"
 `binary_sensor.…_spojeni` (**device_class `connectivity`**) ukazuje **pravdivý stav
 BLE spojení** ESP ↔ HobbyConnect. ⚠️ Nezaměňovat se `sensor.…_napajeni`, což je

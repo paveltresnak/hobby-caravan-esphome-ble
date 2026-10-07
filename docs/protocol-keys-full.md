@@ -80,6 +80,8 @@ fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `k
 > ✅ **Hlášený stav je `1`/`0`, ne `15`** (log 7. 10. 2026, přepínání na panelu): `DECKE`, `WAND`,
 > `ZUSATZL/M/R`, `AMB1–3`, `FUSSB` — switch komponenty tedy stav čte správně (uživatel ho už
 > používá pro `ZUSATZR`/`AMB1–3`). Stmívání podržením tlačítka hlásí jen zap/vyp, ne úroveň.
+> ❌ **Stmívat přes BLE nejde**: `net-LIGHT_DECKE-7` světlo neztlumí (uživatel 7. 10. 2026) —
+> stejně jako u SW `V012000`. Dálkově stmívat jde jen na `V011100` přes `LIGHT_DIMx`.
 > 🧪 Otevřené: projde u těchto klíčů `cmd-tgl:<KLÍČ>` (to posílá switch komponenty)?
 
 > ⚠️ Sadu klíčů tedy určuje **model a verze firmwaru**, ne jen výbava. Když ti něco

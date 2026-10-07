@@ -63,8 +63,8 @@ fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `k
 | `LIGHT_WAND` | (SW `V012000`); Hobby 540 KMFE (SW `V011900`) | světlo, `0`/`1` — tahle verze nevystavuje `LIGHT_DIMx`; v 540 KMFE „Ambiente Eltern“ (ambient ložnice) | [hobby-caravan-pi#1](https://github.com/AndreasKirsten79/hobby-caravan-pi/issues/1), [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 | `LIGHT_BETTR` | Hobby 540 KMFE (SW `V011900`) | postel vpravo — v 495 UL je to `LIGHT_DIM0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 | `LIGHT_BETTL` | Hobby 540 KMFE (SW `V011900`) | postel vlevo — v 495 UL je to `LIGHT_DIM1` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
-| `LIGHT_ZUSATZM` | Hobby 540 KMFE (SW `V011900`) | přídavné „M" (střed?) — jen v dumpu, význam neznámý | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
-| `LIGHT_FUSSB` | Hobby 540 KMFE (SW `V011900`) | nejspíš osvětlení podlahy (*Fußboden*) — jen v dumpu, neověřeno | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_ZUSATZM` | Hobby 540 KMFE (SW `V011900`) | přídavné světlo uprostřed (*Zusatzlicht Mitte* dle [BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity)), hlásí `1`/`0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_FUSSB` | Hobby 540 KMFE (SW `V011900`) | osvětlení podlahy (*Fußbodenlicht* dle [BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity)), hlásí `1`/`0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 
 > 📋 **Dump 540 KMFE** (`PANEL_VERSION` `V011902` — stejný panel jako 495 UL, `SOFTWARE_VERSION`
 > `V011900`): světla v pořadí `DECKE`, `WAND`, `BETTL`, `BETTR`, `DUSCHE`, `WASCH`, `AMB1`–`3`,
@@ -76,9 +76,11 @@ fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `k
 > `net-<KLÍČ>-15` (zap) / `net-<KLÍČ>-0` (vyp) — **nastavení stavu, ne přepnutí**
 > (`cmd-tgl`), ověřeno jen jeho template switchi, bez zpětného čtení stavu.
 > `15` je horní mez stmívací škály `LIGHT_DIMx` (0–15) → světla v tomhle firmwaru
-> nejspíš mají vlastní jméno místo `DIMx` a jdou i stmívat (neověřeno). Jakou hodnotu
-> panel u těch klíčů **hlásí**, zatím nevíme — když `15`, switch komponenty
-> (`decode_bool` bere jen `1`/`on`/`true`) by zapnuté světlo ukázal jako vypnuté.
+> nejspíš mají vlastní jméno místo `DIMx` a jdou i stmívat (neověřeno).
+> ✅ **Hlášený stav je `1`/`0`, ne `15`** (log 7. 10. 2026, přepínání na panelu): `DECKE`, `WAND`,
+> `ZUSATZL/M/R`, `AMB1–3`, `FUSSB` — switch komponenty tedy stav čte správně (uživatel ho už
+> používá pro `ZUSATZR`/`AMB1–3`). Stmívání podržením tlačítka hlásí jen zap/vyp, ne úroveň.
+> 🧪 Otevřené: projde u těchto klíčů `cmd-tgl:<KLÍČ>` (to posílá switch komponenty)?
 
 > ⚠️ Sadu klíčů tedy určuje **model a verze firmwaru**, ne jen výbava. Když ti něco
 > chybí, pusť `esphome logs`, přepni to fyzicky v karavanu a hledej řádek
@@ -107,6 +109,37 @@ fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `k
 - **Truma** `AC_TRUMA_AVAILABLE` `0` (+ `_TYPE/_ENABLE/_TEMP/_MODE/_FAN_LEVEL/_LIGHT_*/_MM`).
 
 > ℹ️ Sinclair klima řešíme **mimo BLE** (Gree/WiFi) — proto jsou tyhle `AC_*` u nás `0`.
+
+### Dometic FreshJet v Hobby 540 KMFE (SW `V011900`, log 7. 10. 2026, [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1))
+
+Klima je na sběrnici: `AC_DOM_FJ_AVAILABLE` `1` (v dumpu 6. 10. bylo `0`; 7. 10. jednou
+krátce `0` a za 10 s zase `1`, ještě před zapnutím klimy — na čem to závisí, nevíme).
+Každou změnu z panelu/ovladače panel pošle hned:
+
+| Klíč | Hodnoty | Pozn. |
+|------|---------|-------|
+| `AC_DOM_FJ_ENABLE` | `On` / `Off` | současně `AC_EN` `1` / `0` |
+| `AC_DOM_FJ_MODE` | `Auto`, `Cool`, `Heat`, `Fan` | při změně módu přijde i `_FAN_SPEED` a `_TARGETTEMP` |
+| `AC_DOM_FJ_TARGETTEMP` | celé °C (v logu 16–22) | |
+| `AC_DOM_FJ_FAN_SPEED` | `Auto`, `Slow`, `Med`, `Fast` (+ `Max` dle BastyJuice) | |
+
+Vlastní teplotu klima nehlásí → pro `climate` entitu by byla aktuální teplota `TEMP_IN`.
+**Zápis přes BLE zatím neověřen** — viz níže sériové příkazy.
+⚠️ `AC_TRUMA_AVAILABLE` jednou přišlo s nečitelným bajtem (`\xc1`), pak `1` / `_TYPE` `10` — Trumu uživatel nemá.
+
+### 🔌 Nezávislý zdroj: CI-Bus přes RS232 ([BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity), od dubna 2026)
+
+Projekt čte tutéž sadu proměnných **přímo z LSG** (Lichtsteuermodul, piny „WLAN") přes RS232
+115200 Bd místo BLE — proměnné tam mají čísla (`$8` = `AC_DOM_FJ_FAN_SPEED`, `$73` =
+`LIGHT_KUECHE`…), názvy jsou shodné s naším BLE dumpem. Ovládání po sériové lince:
+`!tgl:<id>` (přepnout), `!set:<id>=<hodnota>` (nastavit), `!run:30`/`!run:31` (hlavní vypínač
+zap/vyp). Klima: `!set:10=Auto|Heat|Cool|Fan` (mód), `!set:8=Auto|Slow|Med|Fast|Max`
+(ventilátor), `!set:11=22` (cílová teplota). Že zápis po lince funguje, potvrdil i další
+uživatel (issue #1 tamtéž, po výměně kabelu) — ale jen přepínání světel, ne klimu. Pro BLE se nabízí stejná dvojice `cmd-tgl:<KLÍČ>` / `cmd-set:<KLÍČ>=<hodnota>` —
+**obdoba, ne ověřený převod** (HobbyConnect může příkazy překládat jinak).
+Navíc tam jsou klíče, které náš dump nemá: `CHARGER0_*`/`CHARGER1_*` (nabíječ), `DATE`/`TIME`/
+`DATETIME`, `DP_EN` (zapalování), `WAKE_EN`, `IBS0_RECALIBRATED`, `PI_STATE`, a na SW `V011800`
+`FRESH_WATER_LEVEL` místo `WATER_LEVEL`. `TH_W_T` (Truma bojler) bere jen `40` / `60`.
 
 ## 📡 Ostatní (nedostupné)
 `SAT_*` (satelit, `SAT_AVAILABLE` `0`), `PI_PAIRING` `0`.

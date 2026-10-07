@@ -96,6 +96,7 @@ This project builds on the work of others — thanks to:
 - **[@rawsludge](https://github.com/esphome/esphome/pull/13327)** (Ahmet) — original ESPHome
   `fendt_caravan` component (PR #13327) and reverse engineering of the Fendt/HobbyConnect protocol.
 - **tomjeppis** — logged the heating/Truma variables (`HEATER_*`, `AC_TRUMA_*`) via nRF Connect.
+- **[BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity)** — the same variables straight from the CI bus via RS232 (LSG), incl. Dometic A/C commands.
 - The HA community thread *"Hobby Connect for Hobby Caravans"* (#889146) and its contributors.
 
 ## 📄 License

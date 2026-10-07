@@ -85,10 +85,11 @@ Delší zprávy jsou **chunkované po 17 bajtech** s koncovým `@` (most je skl�
 | `THERME_ON` | bojler |
 | `THERME_CONFIG`, `WASTE_WATER_HEATER_CONFIG` | konfigurace |
 
-### 🔋 Baterie — prefix `IBS0_` (Intelligent Battery Sensor) ⭐ NÁŠ OBJEV
+### 🔋 Baterie — prefix `IBS0_` (Intelligent Battery Sensor)
 Posílá se **na změnu** (vyvoláno např. odpojením 230 V). Komponenta `fendt_caravan`
 původně čekala `UBAT`/`IBAT_BAL`, ale Hobby reálně posílá `IBS0_*` → proto se
-nedekódovalo. **Nikde jinde na netu nepopsáno.**
+nedekódovalo. Zjištěno nezávisle; na sériové lince LSG je popsal už dřív
+[BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity) (duben 2026).
 
 | Klíč | Význam | Příklad |
 |------|--------|---------|

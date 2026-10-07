@@ -99,6 +99,7 @@ Projekt staví na práci dalších — díky:
 - **[@rawsludge](https://github.com/esphome/esphome/pull/13327)** (Ahmet) — původní ESPHome
   komponenta `fendt_caravan` (PR #13327) a reverzní inženýrství protokolu Fendt/HobbyConnect.
 - **tomjeppis** — zalogování proměnných topení/Truma (`HEATER_*`, `AC_TRUMA_*`) přes nRF Connect.
+- **[BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity)** — tytéž proměnné přímo z CI-Busu přes RS232 (LSG), vč. příkazů pro klimu Dometic.
 - HA community vlákno *„Hobby Connect for Hobby Caravans"* (#889146) a jeho přispěvatelé.
 
 ## 📄 Licence

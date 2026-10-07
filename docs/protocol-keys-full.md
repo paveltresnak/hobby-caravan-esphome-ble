@@ -64,7 +64,7 @@ fyzickém přepnutí vypínače). Komponenta je umí bez zásahu do C++ přes `k
 | `LIGHT_BETTR` | Hobby 540 KMFE (SW `V011900`) | postel vpravo — v 495 UL je to `LIGHT_DIM0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 | `LIGHT_BETTL` | Hobby 540 KMFE (SW `V011900`) | postel vlevo — v 495 UL je to `LIGHT_DIM1` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 | `LIGHT_ZUSATZM` | Hobby 540 KMFE (SW `V011900`) | přídavné světlo uprostřed (*Zusatzlicht Mitte* dle [BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity)), hlásí `1`/`0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
-| `LIGHT_FUSSB` | Hobby 540 KMFE (SW `V011900`) | osvětlení podlahy (*Fußbodenlicht* dle [BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity)), hlásí `1`/`0` | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
+| `LIGHT_FUSSB` | Hobby 540 KMFE (SW `V011900`) | **podlahové topení** (potvrdil majitel; v 495 UL je to `FLOOR_HEATER_ON`), hlásí `1`/`0` — [BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity) ho vede jako *Fußbodenlicht*, to neplatí | [issue #1](https://github.com/paveltresnak/hobby-caravan-esphome-ble/issues/1) |
 
 > 📋 **Dump 540 KMFE** (`PANEL_VERSION` `V011902` — stejný panel jako 495 UL, `SOFTWARE_VERSION`
 > `V011900`): světla v pořadí `DECKE`, `WAND`, `BETTL`, `BETTR`, `DUSCHE`, `WASCH`, `AMB1`–`3`,

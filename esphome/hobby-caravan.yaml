@@ -283,6 +283,18 @@ text_sensor:
     type: software_version
     name: "Karavan SW verze"
 
+  # Komunikace s panelem: kazdy odeslany prikaz a kazda zprava z panelu jako jeden
+  # stav ("#12 → cmd-tgl:LIGHT_KUECHE", "#13 ← LIGHT_KUECHE:1"). Historie entity v HA
+  # se pak cte jako DEBUG log - na zkouseni prikazu, kdyz je po ruce jen mobil.
+  # V HA ve vychozim stavu vypnuta: panel pri kazdem spojeni a pri kazdem net-BT_VARS
+  # (interval nize, 10 min) vysype cely vypis (u 540 KMFE 75 zprav) a to by plnilo
+  # databazi HA. Zapnout v Nastaveni -> Entity, az bude potreba.
+  - platform: fendt_caravan
+    type: traffic
+    fendt_caravan_id: hobby_caravan_hub
+    name: "Karavan komunikace s panelem"
+    disabled_by_default: true
+
 output:
   - platform: template
     type: float

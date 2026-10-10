@@ -128,4 +128,53 @@ class PanelLink {
   std::deque<std::deque<std::string>> commands_;
 };
 
+// Home Assistant refuses a state longer than 255 characters.
+static const size_t MAX_TRAFFIC_LINE = 255;
+
+// Lines of the traffic text sensor (`type: traffic`): every command sent to the panel and
+// every message it sends back, one state per line. The history of that entity in Home
+// Assistant then reads like the debug log, so somebody with only a phone at hand can test
+// a command and show what the panel answered.
+//
+// The running number keeps two identical lines apart - Home Assistant records a new state
+// only when the text changes, so a second "LIGHT_DECKE:1" would otherwise not show up.
+class TrafficLog {
+ public:
+  // Messages of this key are left out (TEMP_IN/TEMP_OUT arrive several times a second).
+  void ignore_key(const std::string &key) { this->ignored_.push_back(key); }
+
+  // The line for a message from the panel, std::nullopt for a message of an ignored key.
+  std::optional<std::string> received(const std::string &message) {
+    std::string key = message.substr(0, message.find(':'));
+    for (const auto &ignored : this->ignored_) {
+      if (key == ignored)
+        return std::nullopt;
+    }
+    return this->line_("\u2190 ", message);
+  }
+
+  std::string sent(const std::string &command) { return this->line_("\u2192 ", command); }
+
+  // A command given while there was no connection to the panel (it is dropped, not queued).
+  std::string dropped(const std::string &command) { return this->line_("\u2717 ", command + " (not connected)"); }
+
+ private:
+  std::string line_(const char *direction, const std::string &text) {
+    this->counter_ = this->counter_ % 999 + 1;
+    std::string line = "#" + std::to_string(this->counter_) + " " + direction + text;
+    if (line.size() > MAX_TRAFFIC_LINE) {
+      line.resize(MAX_TRAFFIC_LINE);
+      // do not leave half of a multi-byte UTF-8 character at the end
+      while (!line.empty() && (static_cast<uint8_t>(line.back()) & 0xC0) == 0x80)
+        line.pop_back();
+      if (!line.empty() && static_cast<uint8_t>(line.back()) >= 0xC0)
+        line.pop_back();
+    }
+    return line;
+  }
+
+  uint16_t counter_{0};
+  std::vector<std::string> ignored_;
+};
+
 }  // namespace esphome::fendt_caravan

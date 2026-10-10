@@ -41,6 +41,39 @@ Entity s `entity_category: diagnostic` — v HA sedí zvlášť, nepletou se s d
 > Stmívače jsou `light` (monochromatic, optimistický stav) — jas 0–255 v HA se mapuje
 > na 0–15 panelu. Po restartu ESP se stav světel může lišit, než přijde první notify.
 
+### Komunikace s panelem — testování z mobilu (od 1.4.0)
+
+`text_sensor` typu `traffic` ukazuje **každý příkaz poslaný panelu a každou zprávu,
+kterou panel pošle zpátky**, jeden řádek = jeden stav entity:
+
+```
+#41 → cmd-tgl:LIGHT_DECKE
+#42 ← LIGHT_DECKE:1
+#43 ✗ cmd-tgl:LIGHT_DECKE (not connected)
+```
+
+Historie té entity v HA (*kliknout na entitu → Historie*, nebo *Deník*) se pak čte
+jako DEBUG log. Hodí se, když se zkouší nový příkaz přes `text.…_raw_cmd` a po ruce
+je **jen mobil** — log ESP z telefonu jinak rozumně dostat nejde. Pořadové číslo je
+tam proto, že HA uloží nový stav jen při změně textu, takže by se druhé stejné
+`LIGHT_DECKE:1` jinak ztratilo. `→` = odesláno, `←` = přišlo z panelu, `✗` = příkaz
+zahozen, protože ESP nebylo s panelem spojené.
+
+```yaml
+text_sensor:
+  - platform: fendt_caravan
+    type: traffic
+    fendt_caravan_id: hobby_caravan_hub   # id hubu `fendt_caravan:`
+    name: "Karavan komunikace s panelem"
+    # ignore_keys: [TEMP_IN, TEMP_OUT]    # výchozí - teploty chodí několikrát za sekundu
+```
+
+⚠️ Panel při každém spojení a při každém `net-BT_VARS` (v našem configu každých
+10 min) pošle **celý výpis proměnných** — u Hobby 540 KMFE 75 zpráv. Kdo entitu nechá
+trvale zapnutou, plní si databázi HA. V našem configu je proto `disabled_by_default: true`
+a zapíná se v *Nastavení → Zařízení a služby → Entity* jen na dobu testování.
+Bez téhle entity v configu komponenta řádky ani nesestavuje.
+
 ### Klima Dometic FreshJet (jen čtení)
 
 Pro karavany s vestavěnou klimou Dometic FreshJet na sběrnici (viděno v Hobby 540 KMFE,

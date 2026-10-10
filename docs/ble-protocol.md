@@ -159,6 +159,9 @@ Příkaz se zapisuje do téže charakteristiky. Formáty potvrzené křížovým
 3. WRITE formáty: **RAW tester** = template `text` entita v HA, jejíž `set_action`
    volá `id(hub).on_command_send(x)` → lze poslat libovolný příkazový string bez
    nového flashe. Křížový oscilační test odhalí, který formát skutečně nastavuje hodnotu.
+4. Odpověď panelu bez přístupu k logu ESP (od 1.4.0): entita **„komunikace s panelem"**
+   (`text_sensor` typu `traffic`) — příkazy a zprávy panelu v historii entity v HA,
+   viz [`home-assistant.md`](home-assistant.md).
 
 > 💡 `VERY_VERBOSE` nepoužívat — zahltí API log stream ESP32-C3 a způsobí reset.
 > Po sobě uklízet procesy `esphome logs` (>5 souběžných přetíží C3 API).

@@ -121,6 +121,19 @@ v HA poslední stav z panelu. Kód je celý pod `#ifdef USE_CLIMATE`, takže kon
 2026.9.1; živě neověřeno (Dometic nemáme) — data z logu Hobby 540 KMFE, viz
 [`protocol-keys-full.md`](protocol-keys-full.md).
 
+## 11. Komunikace s panelem — `text_sensor` typu `traffic` (1.4.0)
+
+Testeři s jiným půdorysem (Markus, 540 KMFE) zkoušejí příkazy přes RAW entitu, ale
+log ESP z mobilu nepošlou. Nový typ `traffic` publikuje každý příkaz (`→`), zahozený
+příkaz (`✗`) a každou zprávu z panelu (`←`) jako stav textové entity, takže odpověď
+panelu je vidět v historii entity v HA. Formátování řádků je třída `TrafficLog`
+v `protocol_framing.h` (pořadové číslo 1–999, aby HA uložil i dva stejné řádky po sobě;
+klíče z `ignore_keys` vynechá, výchozí `TEMP_IN`/`TEMP_OUT`; řádek zkrátí na 255 B,
+limit HA, a nikdy uprostřed znaku UTF-8). Kryje ji 9 nových [host testů](../tests/host/),
+celkem 47. Hub (`FendtCaravan`) ji volá z `on_command_send`, z příjmu notifikace
+a po handshaku; kód kolem entity je pod `#ifdef USE_TEXT_SENSOR` a bez entity v configu
+se nic nesestavuje. Ověřeno překladem v ESPHome 2026.9.1.
+
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje
 - stmívače (0–15): **`net-KEY-N`** (univerzální), `cmd-set` jen na DIM2

@@ -387,6 +387,77 @@ static void attempts_are_counted_per_chunk() {
   CHECK_STR(send_next(link), "3:04:05:06");
 }
 
+// --------------------------------------------------------------------- traffic
+
+using esphome::fendt_caravan::MAX_TRAFFIC_LINE;
+using esphome::fendt_caravan::TrafficLog;
+
+static const std::string SENT = "\u2192 ";
+static const std::string RECEIVED = "\u2190 ";
+
+static void traffic_lines_are_numbered_and_show_the_direction() {
+  TrafficLog log;
+  CHECK_STR(log.sent("cmd-tgl:LIGHT_DECKE"), "#1 " + SENT + "cmd-tgl:LIGHT_DECKE");
+  CHECK_STR(log.received("LIGHT_DECKE:1").value_or("<ignored>"), "#2 " + RECEIVED + "LIGHT_DECKE:1");
+}
+
+// Home Assistant records a state only when the text changes - the number keeps them apart.
+static void identical_messages_give_different_lines() {
+  TrafficLog log;
+  CHECK(log.received("LIGHT_DECKE:1") != log.received("LIGHT_DECKE:1"));
+}
+
+static void dropped_command_says_so() {
+  TrafficLog log;
+  CHECK_STR(log.dropped("cmd-tgl:LIGHT_DECKE"), "#1 \u2717 cmd-tgl:LIGHT_DECKE (not connected)");
+}
+
+static void ignored_key_is_left_out_and_not_counted() {
+  TrafficLog log;
+  log.ignore_key("TEMP_IN");
+  CHECK(!log.received("TEMP_IN: 25,5^C").has_value());
+  CHECK_STR(log.sent("net-BT_VARS"), "#1 " + SENT + "net-BT_VARS");
+}
+
+// TEMP_IN_OFFSET is a different key than TEMP_IN, only sharing the prefix.
+static void key_sharing_a_prefix_with_an_ignored_one_is_kept() {
+  TrafficLog log;
+  log.ignore_key("TEMP_IN");
+  CHECK(log.received("TEMP_IN_OFFSET:  0").has_value());
+}
+
+static void message_without_colon_is_kept() {
+  TrafficLog log;
+  log.ignore_key("TEMP_IN");
+  CHECK_STR(log.received("BT_START").value_or("<ignored>"), "#1 " + RECEIVED + "BT_START");
+}
+
+static void counter_wraps_after_999() {
+  TrafficLog log;
+  for (int i = 0; i < 999; i++)
+    log.sent("x");
+  CHECK_STR(log.sent("x"), "#1 " + SENT + "x");
+}
+
+static void long_message_is_cut_to_the_home_assistant_limit() {
+  TrafficLog log;
+  std::string line = log.received("KEY:" + std::string(400, 'a')).value_or("");
+  CHECK(line.size() == MAX_TRAFFIC_LINE);
+}
+
+// A cut through the middle of a multi-byte character would be invalid UTF-8 in Home Assistant.
+static void long_message_is_not_cut_inside_a_character() {
+  TrafficLog log;
+  std::string text;
+  while (text.size() < 400)
+    text += "\u00b0";  // 2 bytes
+  // "#1 " + arrow + "KE:" is 10 bytes, so the cut at 255 falls inside a character
+  std::string line = log.received("KE:" + text).value_or("");
+  CHECK(line.size() <= MAX_TRAFFIC_LINE);
+  CHECK((static_cast<uint8_t>(line.back()) & 0xC0) == 0x80);  // ends with a whole character
+  CHECK(static_cast<uint8_t>(line[line.size() - 2]) == 0xC2);
+}
+
 // ------------------------------------------------------------------------ main
 
 struct TestCase {
@@ -435,6 +506,15 @@ static const TestCase TESTS[] = {
     {"refused_write_is_retried", refused_write_is_retried},
     {"command_refused_three_times_is_dropped_whole", command_refused_three_times_is_dropped_whole},
     {"attempts_are_counted_per_chunk", attempts_are_counted_per_chunk},
+    {"traffic_lines_are_numbered_and_show_the_direction", traffic_lines_are_numbered_and_show_the_direction},
+    {"identical_messages_give_different_lines", identical_messages_give_different_lines},
+    {"dropped_command_says_so", dropped_command_says_so},
+    {"ignored_key_is_left_out_and_not_counted", ignored_key_is_left_out_and_not_counted},
+    {"key_sharing_a_prefix_with_an_ignored_one_is_kept", key_sharing_a_prefix_with_an_ignored_one_is_kept},
+    {"message_without_colon_is_kept", message_without_colon_is_kept},
+    {"counter_wraps_after_999", counter_wraps_after_999},
+    {"long_message_is_cut_to_the_home_assistant_limit", long_message_is_cut_to_the_home_assistant_limit},
+    {"long_message_is_not_cut_inside_a_character", long_message_is_not_cut_inside_a_character},
 };
 
 int main(int argc, char **argv) {

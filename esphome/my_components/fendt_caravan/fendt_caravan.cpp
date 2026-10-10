@@ -86,6 +86,8 @@ void FendtCaravan::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
 
       ESP_LOGD(TAG, "Handshake as %s", this->bt_id_.c_str());
       this->link_.start(this->bt_id_);
+      if (this->traffic_enabled_())
+        this->publish_traffic_(this->traffic_.sent("handshake (net-BT_ID, net-BT_VARS)"));
       break;
     }
     case ESP_GATTC_NOTIFY_EVT:
@@ -93,6 +95,8 @@ void FendtCaravan::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
         auto message = this->link_.feed(param->notify.value, param->notify.value_len);
         if (message.has_value()) {
           ESP_LOGD(TAG, "Notified value: %s", message->c_str());
+          if (this->traffic_enabled_())
+            this->publish_traffic_(this->traffic_.received(*message));
           this->on_data_received_(*message);
         }
       }
@@ -125,8 +129,27 @@ void FendtCaravan::on_data_received_(const std::string &data) {
 
 void FendtCaravan::on_command_send(const std::string &command) {
   ESP_LOGV(TAG, "on_command_send called. Command: %s", command.c_str());
-  if (!this->link_.queue(command))
+  bool queued = this->link_.queue(command);
+  if (!queued)
     ESP_LOGW(TAG, "Not connected to the caravan, command dropped: %s", command.c_str());
+  if (this->traffic_enabled_())
+    this->publish_traffic_(queued ? this->traffic_.sent(command) : this->traffic_.dropped(command));
+}
+
+// Without a traffic text sensor in the config none of the lines is even built.
+bool FendtCaravan::traffic_enabled_() const {
+#ifdef USE_TEXT_SENSOR
+  return this->traffic_sensor_ != nullptr;
+#else
+  return false;
+#endif
+}
+
+void FendtCaravan::publish_traffic_(const std::optional<std::string> &line) {
+#ifdef USE_TEXT_SENSOR
+  if (line.has_value())
+    this->traffic_sensor_->publish_state(*line);
+#endif
 }
 
 }  // namespace esphome::fendt_caravan

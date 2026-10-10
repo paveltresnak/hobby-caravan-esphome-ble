@@ -43,6 +43,7 @@ auf der ESPHome-Komponente [`fendt_caravan`](https://github.com/esphome/esphome/
 | 💧 Frischwassertank | Füllstand in % (0 / 25 / 50 / 75 / 100) | ✅ lesen ¹ |
 | 📶 Verbindung zum Wohnwagen | BLE verbunden / außer Reichweite | ✅ lesen ² |
 | 🩺 ESP-Diagnose | Uptime, WLAN-Signal, Firmware-Version, Neustart, BLE trennen (frei für die offizielle App) | ✅ |
+| 🔎 Panel-Verkehr | jeder Befehl und jede Panel-Meldung im Verlauf der Entität — Befehle vom Handy testen, ohne Log | ✅ Diagnose |
 
 > ¹ Die Skala von `WATER_LEVEL` ist **grob in 25-%-Schritten** (beim Befüllen verifiziert,
 > 01.07.2026), keine Liter. Das Panel misst **nur on demand** — einen frischen Wert sendet es,

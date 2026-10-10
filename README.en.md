@@ -41,6 +41,7 @@ mobile app and added **control (WRITE) commands**.
 | 💧 Fresh water tank | level in % (0 / 25 / 50 / 75 / 100) | ✅ read ¹ |
 | 📶 Caravan link | BLE connected / out of range | ✅ read ² |
 | 🩺 ESP diagnostics | uptime, Wi-Fi signal, firmware version, restart, BLE disconnect (frees it for the official app) | ✅ |
+| 🔎 Panel traffic | every command and every panel message in the entity history — test commands from a phone, no log needed | ✅ diagnostics |
 
 > ¹ The `WATER_LEVEL` scale is **coarse, in 25 % steps** (verified while filling, 2026-07-01),
 > not litres. The panel measures **on demand** — a fresh value is sent when the water screen is

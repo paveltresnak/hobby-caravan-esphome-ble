@@ -9,6 +9,9 @@
 #include "esphome/components/ble_client/ble_client.h"
 #include "esphome/components/esp32_ble_client/ble_characteristic.h"
 #include "protocol_framing.h"
+#ifdef USE_TEXT_SENSOR
+#include "esphome/components/text_sensor/text_sensor.h"
+#endif
 
 namespace esphome::fendt_caravan {
 using namespace std;
@@ -30,9 +33,16 @@ class FendtCaravan : public Component, public ble_client::BLEClientNode {
   }
   void dump_config() override;
   void on_command_send(const std::string &command);
+#ifdef USE_TEXT_SENSOR
+  // Optional text sensor showing the traffic with the panel (`type: traffic`).
+  void set_traffic_text_sensor(text_sensor::TextSensor *sensor) { this->traffic_sensor_ = sensor; }
+  void add_traffic_ignore_key(const std::string &key) { this->traffic_.ignore_key(key); }
+#endif
 
  protected:
   void on_data_received_(const std::string &data);
+  bool traffic_enabled_() const;
+  void publish_traffic_(const std::optional<std::string> &line);
 
  private:
   const char *service_uuid_ = "C7841029-FE7C-4894-8532-F97908EF1AE4";  // değiştirilmesi gerekebilir
@@ -41,6 +51,10 @@ class FendtCaravan : public Component, public ble_client::BLEClientNode {
   uint32_t last_command_time_ = 0;
   std::string bt_id_;
   PanelLink link_;
+  TrafficLog traffic_;
+#ifdef USE_TEXT_SENSOR
+  text_sensor::TextSensor *traffic_sensor_{nullptr};
+#endif
   CaravanDeviceComponent *mcu_device_{nullptr};
 };
 }  // namespace esphome::fendt_caravan

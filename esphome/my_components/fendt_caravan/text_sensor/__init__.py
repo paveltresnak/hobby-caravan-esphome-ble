@@ -1,9 +1,19 @@
 import esphome.codegen as cg
 from esphome.components import text_sensor
 import esphome.config_validation as cv
-from esphome.const import CONF_TYPE
+from esphome.const import CONF_TYPE, ENTITY_CATEGORY_DIAGNOSTIC
 
-from .. import CONF_KEY_NAME, CONF_PARENT_ID, CaravanDeviceComponent, fendt_caravan_ns
+from .. import (
+    CONF_KEY_NAME,
+    CONF_PARENT_ID,
+    CaravanDeviceComponent,
+    FendtCaravan,
+    fendt_caravan_ns,
+)
+
+CONF_FENDT_CARAVAN_ID = "fendt_caravan_id"
+CONF_IGNORE_KEYS = "ignore_keys"
+TYPE_TRAFFIC = "traffic"
 
 FendtTextSensor = fendt_caravan_ns.class_(
     "FendtTextSensor",
@@ -38,11 +48,34 @@ CONFIG_SCHEMA = cv.typed_schema(
         "software_version": _text_schema(
             icon="mdi:application-braces-outline", key_name="SOFTWARE_VERSION"
         ),
+        # Every command sent to the panel and every message it sends back, one state per
+        # line ("#12 -> cmd-tgl:LIGHT_KUECHE", "#13 <- LIGHT_KUECHE:1"). Meant for testing
+        # commands from a phone: the history of the entity reads like the debug log.
+        TYPE_TRAFFIC: text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:swap-horizontal",
+        ).extend(
+            {
+                cv.Required(CONF_FENDT_CARAVAN_ID): cv.use_id(FendtCaravan),
+                # the temperatures arrive several times a second and would drown the rest
+                cv.Optional(
+                    CONF_IGNORE_KEYS, default=["TEMP_IN", "TEMP_OUT"]
+                ): cv.ensure_list(cv.string),
+            }
+        ),
     }
 )
 
 
 async def to_code(config):
+    if config[CONF_TYPE] == TYPE_TRAFFIC:
+        hub = await cg.get_variable(config[CONF_FENDT_CARAVAN_ID])
+        var = await text_sensor.new_text_sensor(config)
+        cg.add(hub.set_traffic_text_sensor(var))
+        for key in config[CONF_IGNORE_KEYS]:
+            cg.add(hub.add_traffic_ignore_key(key))
+        return
+
     parent = await cg.get_variable(config[CONF_PARENT_ID])
     var = await text_sensor.new_text_sensor(config)
     if CONF_KEY_NAME in config:

@@ -39,6 +39,7 @@ Překládá se s `-fno-exceptions` (jako na ESP-IDF) a `-fstack-protector-all`.
 | `.../protocol_framing.h` — `PanelLink` | handshake s danou `BT_ID`, nic se neposílá bez spojení ani uprostřed přicházející zprávy, odpojení zahodí rozpracovaný rámec i frontu, odmítnutý zápis 3× a pak celý příkaz pryč |
 | `.../sensor/device_decoders.cpp` | `decode_temperature`, `decode_number` (`" 13,9 V"`, `"25,5^C"`), `decode_int_str` mimo rozsah, prázdné a nesmyslné hodnoty |
 | `.../variable.h` | `decode()` u klíče registrovaného bez dekodéru (`HS_KEY`) |
+| `.../protocol_framing.h` — `TrafficLog` | řádky entity „komunikace s panelem": číslování a jeho přetočení, vynechané klíče (a jen celé, ne podle prefixu), zkrácení na 255 B mimo střed znaku UTF-8 |
 
 `stubs/esphome/core/` obsahuje minimální náhrady hlaviček ESPHome (log, `CallbackManager`),
 aby šly zdrojáky komponenty přeložit mimo ESP-IDF. Zbytek komponenty (BLE klient,

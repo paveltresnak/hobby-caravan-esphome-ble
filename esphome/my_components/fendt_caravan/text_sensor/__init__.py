@@ -51,6 +51,7 @@ CONFIG_SCHEMA = cv.typed_schema(
         # Every command sent to the panel and every message it sends back, one state per
         # line ("#12 -> cmd-tgl:LIGHT_KUECHE", "#13 <- LIGHT_KUECHE:1"). Meant for testing
         # commands from a phone: the history of the entity reads like the debug log.
+        # Lines leave one per 250 ms, the API would pass on only the last one of a burst.
         TYPE_TRAFFIC: text_sensor.text_sensor_schema(
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
             icon="mdi:swap-horizontal",

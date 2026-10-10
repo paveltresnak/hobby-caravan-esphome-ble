@@ -458,6 +458,57 @@ static void long_message_is_not_cut_inside_a_character() {
   CHECK(static_cast<uint8_t>(line[line.size() - 2]) == 0xC2);
 }
 
+using esphome::fendt_caravan::MAX_TRAFFIC_BACKLOG;
+using esphome::fendt_caravan::TRAFFIC_PUBLISH_INTERVAL_MS;
+
+static void first_line_is_published_at_once() {
+  TrafficLog log;
+  log.push(log.sent("net-BT_VARS"));
+  CHECK_STR(log.next_due(5000).value_or("<nothing>"), "#1 " + SENT + "net-BT_VARS");
+  CHECK(!log.next_due(5000).has_value());
+}
+
+// The panel's dump comes in a few seconds; every line has to leave on its own.
+static void burst_leaves_one_line_per_interval() {
+  TrafficLog log;
+  for (int i = 0; i < 3; i++)
+    log.push(log.received("KEY:" + std::to_string(i)));
+  CHECK_STR(log.next_due(1000).value_or("<nothing>"), "#1 " + RECEIVED + "KEY:0");
+  CHECK(!log.next_due(1000 + TRAFFIC_PUBLISH_INTERVAL_MS - 1).has_value());
+  CHECK_STR(log.next_due(1000 + TRAFFIC_PUBLISH_INTERVAL_MS).value_or("<nothing>"), "#2 " + RECEIVED + "KEY:1");
+  CHECK_STR(log.next_due(1000 + 2 * TRAFFIC_PUBLISH_INTERVAL_MS).value_or("<nothing>"), "#3 " + RECEIVED + "KEY:2");
+  CHECK(!log.next_due(1000 + 9 * TRAFFIC_PUBLISH_INTERVAL_MS).has_value());
+}
+
+static void ignored_message_is_not_queued() {
+  TrafficLog log;
+  log.ignore_key("TEMP_IN");
+  log.push(log.received("TEMP_IN: 25,5^C"));
+  CHECK(!log.next_due(1000).has_value());
+}
+
+static void interval_survives_the_millis_wraparound() {
+  TrafficLog log;
+  log.push(log.sent("a"));
+  log.push(log.sent("b"));
+  uint32_t before_wrap = 0xFFFFFFFFu - 10;
+  CHECK(log.next_due(before_wrap).has_value());
+  CHECK(!log.next_due(before_wrap + 100).has_value());
+  CHECK_STR(log.next_due(before_wrap + TRAFFIC_PUBLISH_INTERVAL_MS).value_or("<nothing>"), "#2 " + SENT + "b");
+}
+
+// A full backlog drops the oldest lines and says how many, instead of a silent gap.
+static void full_backlog_reports_skipped_lines() {
+  TrafficLog log;
+  for (size_t i = 0; i < MAX_TRAFFIC_BACKLOG + 2; i++)
+    log.push(log.sent("x"));
+  uint32_t now = 1000;
+  CHECK_STR(log.next_due(now).value_or("<nothing>"),
+            "#" + std::to_string(MAX_TRAFFIC_BACKLOG + 3) + " \u2026 2 lines skipped");
+  now += TRAFFIC_PUBLISH_INTERVAL_MS;
+  CHECK_STR(log.next_due(now).value_or("<nothing>"), "#3 " + SENT + "x");
+}
+
 // ------------------------------------------------------------------------ main
 
 struct TestCase {
@@ -515,6 +566,11 @@ static const TestCase TESTS[] = {
     {"counter_wraps_after_999", counter_wraps_after_999},
     {"long_message_is_cut_to_the_home_assistant_limit", long_message_is_cut_to_the_home_assistant_limit},
     {"long_message_is_not_cut_inside_a_character", long_message_is_not_cut_inside_a_character},
+    {"first_line_is_published_at_once", first_line_is_published_at_once},
+    {"burst_leaves_one_line_per_interval", burst_leaves_one_line_per_interval},
+    {"ignored_message_is_not_queued", ignored_message_is_not_queued},
+    {"interval_survives_the_millis_wraparound", interval_survives_the_millis_wraparound},
+    {"full_backlog_reports_skipped_lines", full_backlog_reports_skipped_lines},
 };
 
 int main(int argc, char **argv) {

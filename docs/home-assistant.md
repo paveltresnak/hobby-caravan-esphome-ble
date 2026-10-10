@@ -68,8 +68,11 @@ text_sensor:
     # ignore_keys: [TEMP_IN, TEMP_OUT]    # výchozí - teploty chodí několikrát za sekundu
 ```
 
+Řádky odcházejí po jednom **každých 250 ms** — API ESPHome by jinak z rychlé dávky
+poslal jen poslední. Celý výpis panelu tak do HA dobíhá ~25 s.
+
 ⚠️ Panel při každém spojení a při každém `net-BT_VARS` (v našem configu každých
-10 min) pošle **celý výpis proměnných** — u Hobby 540 KMFE 75 zpráv. Kdo entitu nechá
+10 min) pošle **celý výpis proměnných** — u 495 UL 95 zpráv, u 540 KMFE 75. Kdo entitu nechá
 trvale zapnutou, plní si databázi HA. V našem configu je proto `disabled_by_default: true`
 a zapíná se v *Nastavení → Zařízení a služby → Entity* jen na dobu testování.
 Bez téhle entity v configu komponenta řádky ani nesestavuje.

@@ -129,10 +129,19 @@ příkaz (`✗`) a každou zprávu z panelu (`←`) jako stav textové entity, t
 panelu je vidět v historii entity v HA. Formátování řádků je třída `TrafficLog`
 v `protocol_framing.h` (pořadové číslo 1–999, aby HA uložil i dva stejné řádky po sobě;
 klíče z `ignore_keys` vynechá, výchozí `TEMP_IN`/`TEMP_OUT`; řádek zkrátí na 255 B,
-limit HA, a nikdy uprostřed znaku UTF-8). Kryje ji 9 nových [host testů](../tests/host/),
-celkem 47. Hub (`FendtCaravan`) ji volá z `on_command_send`, z příjmu notifikace
-a po handshaku; kód kolem entity je pod `#ifdef USE_TEXT_SENSOR` a bez entity v configu
-se nic nesestavuje. Ověřeno překladem v ESPHome 2026.9.1.
+limit HA, a nikdy uprostřed znaku UTF-8). Hub (`FendtCaravan`) do ní řádky dává
+z `on_command_send`, z příjmu notifikace a po handshaku; kód kolem entity je pod
+`#ifdef USE_TEXT_SENSOR` a bez entity v configu se nic nesestavuje.
+
+**Řádky odcházejí po jednom každých 250 ms** (fronta max. 150, při přetečení vypadnou
+nejstarší a přijde řádek `… N lines skipped`). První verze publikovala hned a živý test
+ukázal, že z odpovědi na `net-BT_VARS` (95 zpráv za pár sekund) došlo přes API jen 25:
+API ESPHome posílá v jedné dávce (`batch_delay`, výchozí 100 ms) u entity jen poslední
+stav. Výpis tak trvá ~25 s, ale je celý.
+
+Kryje to 14 nových [host testů](../tests/host/), celkem 52. **Živě na 495 UL:**
+`net-BT_VARS` z RAW entity → 96 řádků s číslováním bez mezer, každá zpráva panelu kromě
+teplot (těch za 40 s přišlo 198) je v entitě.
 
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje

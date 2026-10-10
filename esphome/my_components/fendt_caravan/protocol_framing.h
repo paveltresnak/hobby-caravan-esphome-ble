@@ -130,6 +130,11 @@ class PanelLink {
 
 // Home Assistant refuses a state longer than 255 characters.
 static const size_t MAX_TRAFFIC_LINE = 255;
+// The API sends only the latest state of an entity within one batch (batch_delay, 100 ms by
+// default), so lines leave one at a time with a gap longer than that.
+static const uint32_t TRAFFIC_PUBLISH_INTERVAL_MS = 250;
+// Lines waiting to be published; the full dump of the panel is 75-100 messages.
+static const size_t MAX_TRAFFIC_BACKLOG = 150;
 
 // Lines of the traffic text sensor (`type: traffic`): every command sent to the panel and
 // every message it sends back, one state per line. The history of that entity in Home
@@ -138,6 +143,10 @@ static const size_t MAX_TRAFFIC_LINE = 255;
 //
 // The running number keeps two identical lines apart - Home Assistant records a new state
 // only when the text changes, so a second "LIGHT_DECKE:1" would otherwise not show up.
+//
+// The panel answers net-BT_VARS with all its variables in a few seconds. Published as they
+// come, the API would pass on only the last line of every batch (seen live: 25 of 95), so
+// the lines wait in a backlog and are handed out at TRAFFIC_PUBLISH_INTERVAL_MS.
 class TrafficLog {
  public:
   // Messages of this key are left out (TEMP_IN/TEMP_OUT arrive several times a second).
@@ -158,6 +167,36 @@ class TrafficLog {
   // A command given while there was no connection to the panel (it is dropped, not queued).
   std::string dropped(const std::string &command) { return this->line_("\u2717 ", command + " (not connected)"); }
 
+  void push(const std::optional<std::string> &line) {
+    if (!line.has_value())
+      return;
+    if (this->backlog_.size() >= MAX_TRAFFIC_BACKLOG) {
+      this->backlog_.pop_front();
+      this->skipped_++;
+    }
+    this->backlog_.push_back(*line);
+  }
+
+  // The line to publish now, std::nullopt when there is none or the last one left too recently.
+  // Lines lost to a full backlog are reported by a line of their own, so a gap in the running
+  // numbers is never silent.
+  std::optional<std::string> next_due(uint32_t now_ms) {
+    if (this->backlog_.empty() && this->skipped_ == 0)
+      return std::nullopt;
+    if (this->published_ && now_ms - this->last_publish_ms_ < TRAFFIC_PUBLISH_INTERVAL_MS)
+      return std::nullopt;
+    this->published_ = true;
+    this->last_publish_ms_ = now_ms;
+    if (this->skipped_ > 0) {
+      std::string note = std::to_string(this->skipped_) + " lines skipped";
+      this->skipped_ = 0;
+      return this->line_("\u2026 ", note);
+    }
+    std::string line = this->backlog_.front();
+    this->backlog_.pop_front();
+    return line;
+  }
+
  private:
   std::string line_(const char *direction, const std::string &text) {
     this->counter_ = this->counter_ % 999 + 1;
@@ -175,6 +214,10 @@ class TrafficLog {
 
   uint16_t counter_{0};
   std::vector<std::string> ignored_;
+  std::deque<std::string> backlog_;
+  uint32_t skipped_{0};
+  bool published_{false};
+  uint32_t last_publish_ms_{0};
 };
 
 }  // namespace esphome::fendt_caravan

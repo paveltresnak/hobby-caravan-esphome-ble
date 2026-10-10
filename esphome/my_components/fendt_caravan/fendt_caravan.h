@@ -42,7 +42,7 @@ class FendtCaravan : public Component, public ble_client::BLEClientNode {
  protected:
   void on_data_received_(const std::string &data);
   bool traffic_enabled_() const;
-  void publish_traffic_(const std::optional<std::string> &line);
+  void publish_traffic_();
 
  private:
   const char *service_uuid_ = "C7841029-FE7C-4894-8532-F97908EF1AE4";  // değiştirilmesi gerekebilir

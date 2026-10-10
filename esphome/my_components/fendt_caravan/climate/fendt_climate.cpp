@@ -11,12 +11,47 @@ static const char *const TAG = "FC.AC";
 // One change on the A/C arrives as a burst of keys (a mode change also re-sends fan speed
 // and target temperature), so publish once the burst is over instead of once per key.
 static const uint32_t PUBLISH_DELAY_MS = 100;
+// The panel answers a command within a second. Without an answer by then, Home Assistant
+// goes back to what the panel last reported instead of showing a request as the state.
+static const uint32_t CONFIRM_TIMEOUT_MS = 5000;
+
+static const char *mode_name(climate::ClimateMode mode) {
+  switch (mode) {
+    case climate::CLIMATE_MODE_COOL:
+      return "Cool";
+    case climate::CLIMATE_MODE_HEAT:
+      return "Heat";
+    case climate::CLIMATE_MODE_FAN_ONLY:
+      return "Fan";
+    case climate::CLIMATE_MODE_AUTO:
+      return "Auto";
+    default:
+      return nullptr;
+  }
+}
+
+static const char *fan_name(climate::ClimateFanMode fan) {
+  switch (fan) {
+    case climate::CLIMATE_FAN_AUTO:
+      return "Auto";
+    case climate::CLIMATE_FAN_LOW:
+      return "Slow";
+    case climate::CLIMATE_FAN_MEDIUM:
+      return "Med";
+    case climate::CLIMATE_FAN_HIGH:
+      return "Fast";
+    default:
+      return nullptr;
+  }
+}
 
 void FendtDometicClimate::setup() {
   this->enable_ = this->string_variable_("AC_DOM_FJ_ENABLE");
   this->mode_ = this->string_variable_("AC_DOM_FJ_MODE");
   this->fan_speed_ = this->string_variable_("AC_DOM_FJ_FAN_SPEED");
   this->target_temp_ = this->string_variable_("AC_DOM_FJ_TARGETTEMP");
+  // the panel's answer to a toggle - from here on its report is the truth again
+  this->enable_->set_on_decode_callback([this](const std::string &) { this->pending_on_.reset(); });
 
   // The A/C does not report a room temperature of its own; the panel's indoor sensor is
   // the closest thing to it.
@@ -111,14 +146,78 @@ climate::ClimateTraits FendtDometicClimate::traits() {
   return traits;
 }
 
+DometicState FendtDometicClimate::panel_state_() {
+  DometicState state;
+  if (this->pending_on_.has_value()) {
+    state.on = this->pending_on_;
+  } else if (this->enable_->is_active()) {
+    state.on = DeviceDecoders::decode_bool(this->enable_->get_value());
+  }
+  if (this->mode_->is_active())
+    state.mode = this->mode_->get_value();
+  if (this->fan_speed_->is_active())
+    state.fan_speed = this->fan_speed_->get_value();
+  if (this->target_temp_->is_active()) {
+    float target = DeviceDecoders::decode_number(this->target_temp_->get_value());
+    if (!std::isnan(target))
+      state.target_temp = (int) lroundf(target);
+  }
+  return state;
+}
+
 void FendtDometicClimate::control(const climate::ClimateCall &call) {
-  ESP_LOGW(TAG, "Controlling the Dometic A/C over BLE is not supported yet, request ignored");
-  // Snap Home Assistant back to the state the panel reported.
+  DometicRequest want;
+  auto mode = call.get_mode();
+  if (mode.has_value()) {
+    if (*mode == climate::CLIMATE_MODE_OFF) {
+      want.on = false;
+    } else {
+      want.on = true;
+      if (const char *name = mode_name(*mode))
+        want.mode = name;
+    }
+  }
+  auto fan = call.get_fan_mode();
+  if (fan.has_value()) {
+    if (const char *name = fan_name(*fan))
+      want.fan_speed = name;
+  }
+  auto target = call.get_target_temperature();
+  if (target.has_value())
+    want.target_temp = (int) lroundf(*target);
+
+  DometicCommands result = dometic_commands(this->panel_state_(), want);
+  if (result.enable_unknown)
+    ESP_LOGW(TAG, "The panel has not reported yet whether the A/C is on, not switching it");
+  for (const auto &command : result.commands)
+    this->get_parent()->on_state_change_command("AC_DOM_FJ", command);
+  if (result.toggles_enable)
+    this->pending_on_ = want.on;
+
+  if (result.commands.empty()) {
+    this->publish_from_panel_();
+    return;
+  }
+
+  // Show the request right away and check it against the panel once it had time to answer.
+  if (mode.has_value() && !result.enable_unknown)
+    this->mode = *mode;
+  if (want.fan_speed.has_value())
+    this->fan_mode = *fan;
+  if (target.has_value())
+    this->target_temperature = (float) *want.target_temp;
   this->publish_state();
+  this->set_timeout("confirm", CONFIRM_TIMEOUT_MS, [this]() {
+    if (this->pending_on_.has_value()) {
+      ESP_LOGW(TAG, "The panel did not confirm switching the A/C %s", *this->pending_on_ ? "on" : "off");
+      this->pending_on_.reset();
+    }
+    this->publish_from_panel_();
+  });
 }
 
 void FendtDometicClimate::dump_config() {
-  LOG_CLIMATE("", "Dometic FreshJet (read-only)", this);
+  LOG_CLIMATE("", "Dometic FreshJet", this);
 }
 
 }  // namespace esphome::fendt_caravan

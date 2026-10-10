@@ -108,7 +108,7 @@ celkem 36. Ověřeno i živě na 495 UL (12/12): ovládání světla před i po 
 mimo spojení zahozen a po návratu nepřehrán, jeden handshake, kompletní výpis `BT_START`…`BT_STOP`. Do configu přibyl spínač **„Karavan BLE povoleno"** (`ble_client` switch):
 vypnutím se ESP odpojí a uvolní jediné BLE spojení HobbyConnectu pro oficiální aplikaci.
 
-## 10. Klima Dometic FreshJet — platforma `climate` (jen čtení)
+## 10. Klima Dometic FreshJet — platforma `climate` (do 1.4.0 jen čtení, ovládání viz §12)
 
 Nová platforma `climate/` (`FendtDometicClimate`, `type: dometic_freshjet`). Pověsí se na
 proměnné `AC_DOM_FJ_ENABLE`/`_MODE`/`_FAN_SPEED`/`_TARGETTEMP` (dosud jen decode-only
@@ -142,6 +142,20 @@ stav. Výpis tak trvá ~25 s, ale je celý.
 Kryje to 14 nových [host testů](../tests/host/), celkem 52. **Živě na 495 UL:**
 `net-BT_VARS` z RAW entity → 96 řádků s číslováním bez mezer, každá zpráva panelu kromě
 teplot (těch za 40 s přišlo 198) je v entitě.
+
+## 12. Klima Dometic FreshJet — ovládání (1.5.0)
+
+`control()` místo varování posílá příkazy, které ověřil majitel 540 KMFE (10. 10. 2026,
+přes entitu „komunikace s panelem" z §11): `cmd-tgl:AC_DOM_FJ_ENABLE`,
+`net-AC_DOM_FJ_MODE-<mód>`, `net-AC_DOM_FJ_FAN_SPEED-<rychlost>`,
+`cmd-set:AC_DOM_FJ_TARGETTEMP=<°C>`. Pravidla jsou v `climate/dometic_commands.h` bez
+typů ESPHome a kryje je 8 [host testů](../tests/host/) (celkem 60): posílá se jen rozdíl
+proti panelu, `ENABLE` (přepínač) se nepošle, dokud panel nenahlásil stav, a zapnutí jde
+před módem. Po přepnutí si entita pamatuje očekávaný stav, dokud ho panel nepotvrdí, takže
+dvojí klik na „vypnout" klimu znovu nezapne; bez potvrzení do 5 s se HA vrátí na stav
+z panelu. Přibyl i typ spínače `decke` (`LIGHT_DECKE`, `cmd-tgl` ověřen 8. 10.).
+Ověřeno překladem s `climate:` i bez něj (ESPHome 2026.9.1); živě jen u testera
+(Dometic nemáme).
 
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje

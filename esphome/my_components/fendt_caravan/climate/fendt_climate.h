@@ -6,15 +6,16 @@
 #include "esphome/components/climate/climate.h"
 #include "esphome/components/fendt_caravan/caravan_device_component.h"
 #include "esphome/components/fendt_caravan/variable.h"
+#include "esphome/components/fendt_caravan/climate/dometic_commands.h"
 #include "esphome/core/component.h"
+#include <optional>
 #include <string>
 
 namespace esphome::fendt_caravan {
 
 // Dometic FreshJet roof A/C as the panel reports it (AC_DOM_FJ_*), seen on a Hobby 540 KMFE
-// with software V011900. Read-only for now: the panel reports every change made on the A/C
-// or its remote, but the BLE command format for it is not verified yet, so control() only
-// logs and re-publishes the state the panel last reported.
+// with software V011900. The panel reports every change made on the A/C or its remote;
+// control() sends what differs from that (formats in dometic_commands.h).
 class FendtDometicClimate : public climate::Climate, public Component, public Parented<CaravanDeviceComponent> {
  public:
   void setup() override;
@@ -29,6 +30,11 @@ class FendtDometicClimate : public climate::Climate, public Component, public Pa
   Variable<std::string> *string_variable_(const char *key);
   void schedule_publish_();
   void publish_from_panel_();
+  DometicState panel_state_();
+
+  // ENABLE is a toggle: until the panel confirms a switch on/off, a second request must be
+  // compared with what was asked for, not with the stale report - or it toggles back.
+  std::optional<bool> pending_on_;
 
   Variable<std::string> *enable_{nullptr};
   Variable<std::string> *mode_{nullptr};

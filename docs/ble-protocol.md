@@ -140,6 +140,9 @@ Příkaz se zapisuje do téže charakteristiky. Formáty potvrzené křížovým
 | **Nastavit jas stmívače** | `net-KLÍČ-N` (N = 0–15) | **Univerzální** pro `LIGHT_DIM2` i `LIGHT_DIM3`. |
 | **Lednice — zdroj** | `net-FRIDGE_SOURCE-N` | 0=Auto / 1=Plyn / 2=12V / 3=230V ✅ |
 | **Lednice — teplota** | `net-FRIDGE_TEMP-N` | N = 1–5 (5 = max chlazení) ✅ |
+| **Klima Dometic — zap/vyp** | `cmd-tgl:AC_DOM_FJ_ENABLE` | přepínač ✅ (540 KMFE) |
+| **Klima Dometic — mód / ventilátor** | `net-AC_DOM_FJ_MODE-Cool` / `net-AC_DOM_FJ_FAN_SPEED-Slow` | hodnota **textem** ✅ (540 KMFE) |
+| **Klima Dometic — teplota** | `cmd-set:AC_DOM_FJ_TARGETTEMP=21` | celé °C ✅ (540 KMFE) |
 | Centrální tlačítko | `net-HS_KEY` / `net-HS_KEY_LONG` | krátký/dlouhý stisk |
 
 ⚠️ **Pozor na pasti:**

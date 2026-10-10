@@ -41,6 +41,7 @@ mobile app and added **control (WRITE) commands**.
 | 💧 Fresh water tank | level in % (0 / 25 / 50 / 75 / 100) | ✅ read ¹ |
 | 📶 Caravan link | BLE connected / out of range | ✅ read ² |
 | 🩺 ESP diagnostics | uptime, Wi-Fi signal, firmware version, restart, BLE disconnect (frees it for the official app) | ✅ |
+| ❄️ Dometic FreshJet A/C (some models only, e.g. 540 KMFE) | on/off, mode, fan, target temperature | ✅ control + state (since 1.5.0) |
 | 🔎 Panel traffic | every command and every panel message in the entity history — test commands from a phone, no log needed | ✅ diagnostics |
 
 > ¹ The `WATER_LEVEL` scale is **coarse, in 25 % steps** (verified while filling, 2026-07-01),

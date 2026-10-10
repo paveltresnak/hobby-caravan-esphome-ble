@@ -43,6 +43,8 @@ CONFIG_SCHEMA = cv.typed_schema(
         "kueche2": _switch_schema(icon="mdi:lightbulb", key_name_="LIGHT_KUECHE2"),
         "zusatzl": _switch_schema(icon="mdi:light-switch", key_name_="LIGHT_ZUSATZL"),
         "zusatzr": _switch_schema(icon="mdi:light-switch", key_name_="LIGHT_ZUSATZR"),
+        # ceiling light of the 540 KMFE; cmd-tgl:LIGHT_DECKE switches it, the panel reports 1/0
+        "decke": _switch_schema(icon="mdi:ceiling-light", key_name_="LIGHT_DECKE"),
     }
 )
 

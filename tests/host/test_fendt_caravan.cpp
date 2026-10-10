@@ -9,6 +9,7 @@
 // Run: ./run_tests.sh   (each test runs as its own process, so a crash is reported
 // as a crash instead of taking the whole suite down)
 
+#include "climate/dometic_commands.h"
 #include "protocol_framing.h"
 #include "sensor/device_decoders.h"
 #include "variable.h"
@@ -509,6 +510,102 @@ static void full_backlog_reports_skipped_lines() {
   CHECK_STR(log.next_due(now).value_or("<nothing>"), "#3 " + SENT + "x");
 }
 
+// ------------------------------------------------------------- Dometic A/C
+
+using esphome::fendt_caravan::dometic_commands;
+using esphome::fendt_caravan::DometicCommands;
+using esphome::fendt_caravan::DometicRequest;
+using esphome::fendt_caravan::DometicState;
+
+static const char *const TOGGLE = "cmd-tgl:AC_DOM_FJ_ENABLE";
+
+static std::string joined(const DometicCommands &result) {
+  std::string out;
+  for (const auto &command : result.commands)
+    out += (out.empty() ? "" : " | ") + command;
+  return out;
+}
+
+static DometicState running_ac() {
+  DometicState panel;
+  panel.on = true;
+  panel.mode = "Cool";
+  panel.fan_speed = "Auto";
+  panel.target_temp = 22;
+  return panel;
+}
+
+static void switching_on_toggles_once() {
+  DometicState panel = running_ac();
+  panel.on = false;
+  DometicRequest want;
+  want.on = true;
+  want.mode = "Cool";
+  DometicCommands result = dometic_commands(panel, want);
+  CHECK_STR(joined(result), TOGGLE);
+  CHECK(result.toggles_enable);
+}
+
+// ENABLE is a toggle: "off" for an A/C that is off would switch it on.
+static void switching_off_an_ac_that_is_off_sends_nothing() {
+  DometicState panel = running_ac();
+  panel.on = false;
+  DometicRequest want;
+  want.on = false;
+  CHECK_STR(joined(dometic_commands(panel, want)), "");
+}
+
+static void enable_not_reported_yet_is_not_toggled() {
+  DometicState panel;
+  DometicRequest want;
+  want.on = false;
+  DometicCommands result = dometic_commands(panel, want);
+  CHECK_STR(joined(result), "");
+  CHECK(result.enable_unknown);
+  CHECK(!result.toggles_enable);
+}
+
+static void mode_change_of_a_running_ac_sends_only_the_mode() {
+  DometicRequest want;
+  want.on = true;
+  want.mode = "Heat";
+  CHECK_STR(joined(dometic_commands(running_ac(), want)), "net-AC_DOM_FJ_MODE-Heat");
+}
+
+static void switching_on_in_another_mode_toggles_first() {
+  DometicState panel = running_ac();
+  panel.on = false;
+  DometicRequest want;
+  want.on = true;
+  want.mode = "Heat";
+  CHECK_STR(joined(dometic_commands(panel, want)), std::string(TOGGLE) + " | net-AC_DOM_FJ_MODE-Heat");
+}
+
+static void fan_speed_and_target_use_the_verified_formats() {
+  DometicRequest want;
+  want.fan_speed = "Slow";
+  want.target_temp = 21;
+  CHECK_STR(joined(dometic_commands(running_ac(), want)),
+            "net-AC_DOM_FJ_FAN_SPEED-Slow | cmd-set:AC_DOM_FJ_TARGETTEMP=21");
+}
+
+static void unchanged_values_are_not_sent() {
+  DometicRequest want;
+  want.on = true;
+  want.mode = "Cool";
+  want.fan_speed = "Auto";
+  want.target_temp = 22;
+  CHECK_STR(joined(dometic_commands(running_ac(), want)), "");
+}
+
+static void target_not_reported_yet_is_sent() {
+  DometicState panel = running_ac();
+  panel.target_temp.reset();
+  DometicRequest want;
+  want.target_temp = 22;
+  CHECK_STR(joined(dometic_commands(panel, want)), "cmd-set:AC_DOM_FJ_TARGETTEMP=22");
+}
+
 // ------------------------------------------------------------------------ main
 
 struct TestCase {
@@ -571,6 +668,14 @@ static const TestCase TESTS[] = {
     {"ignored_message_is_not_queued", ignored_message_is_not_queued},
     {"interval_survives_the_millis_wraparound", interval_survives_the_millis_wraparound},
     {"full_backlog_reports_skipped_lines", full_backlog_reports_skipped_lines},
+    {"switching_on_toggles_once", switching_on_toggles_once},
+    {"switching_off_an_ac_that_is_off_sends_nothing", switching_off_an_ac_that_is_off_sends_nothing},
+    {"enable_not_reported_yet_is_not_toggled", enable_not_reported_yet_is_not_toggled},
+    {"mode_change_of_a_running_ac_sends_only_the_mode", mode_change_of_a_running_ac_sends_only_the_mode},
+    {"switching_on_in_another_mode_toggles_first", switching_on_in_another_mode_toggles_first},
+    {"fan_speed_and_target_use_the_verified_formats", fan_speed_and_target_use_the_verified_formats},
+    {"unchanged_values_are_not_sent", unchanged_values_are_not_sent},
+    {"target_not_reported_yet_is_sent", target_not_reported_yet_is_sent},
 };
 
 int main(int argc, char **argv) {

@@ -42,6 +42,7 @@ aplikací HobbyConnect a o **ovládací (WRITE) příkazy**.
 | 💧 Nádrž vody | hladina v % (0 / 25 / 50 / 75 / 100) | ✅ čtení ¹ |
 | 📶 Spojení s karavanem | BLE připojeno / mimo dosah | ✅ čtení ² |
 | 🩺 Diagnostika ESP | uptime, Wi-Fi signál, verze firmwaru, restart, odpojení BLE (uvolní ho pro oficiální aplikaci) | ✅ |
+| ❄️ Klima Dometic FreshJet (jen některé modely, např. 540 KMFE) | zap/vyp, mód, ventilátor, cílová teplota | ✅ ovládání + stav (od 1.5.0) |
 | 🔎 Komunikace s panelem | každý příkaz a každá odpověď panelu v historii entity — zkoušení příkazů z mobilu bez logu | ✅ diagnostika |
 
 > ¹ Stupnice `WATER_LEVEL` je **hrubá, po 25 %** (ověřeno při napouštění 2026-07-01), ne litry.

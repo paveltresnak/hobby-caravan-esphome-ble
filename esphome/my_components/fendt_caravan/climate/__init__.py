@@ -11,7 +11,7 @@ FendtDometicClimate = fendt_caravan_ns.class_(
     cg.Parented.template(CaravanDeviceComponent),
 )
 
-# Read-only for now: the state comes from the panel, commands are not verified yet.
+# State from the panel, control through the BLE commands in climate/dometic_commands.h.
 CONFIG_SCHEMA = cv.typed_schema(
     {
         "dometic_freshjet": climate.climate_schema(FendtDometicClimate)

@@ -40,6 +40,8 @@ class ControlUnitDeviceSensor : public CaravanDeviceComponent, public sensor::Se
   SUB_SWITCH(kueche2);
   SUB_SWITCH(zusatzl);
   SUB_SWITCH(zusatzr);
+  // LIGHT_DECKE (540 KMFE): the variable is created by the switch itself, as for any key_name
+  SUB_SWITCH(decke);
   SUB_SENSOR(batt_voltage);
   SUB_SENSOR(batt_current);
   SUB_SENSOR(batt_soc);

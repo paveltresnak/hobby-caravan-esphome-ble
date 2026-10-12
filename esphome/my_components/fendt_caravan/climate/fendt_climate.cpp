@@ -23,8 +23,6 @@ static const char *mode_name(climate::ClimateMode mode) {
       return "Heat";
     case climate::CLIMATE_MODE_FAN_ONLY:
       return "Fan";
-    case climate::CLIMATE_MODE_AUTO:
-      return "Auto";
     default:
       return nullptr;
   }
@@ -94,6 +92,7 @@ void FendtDometicClimate::publish_from_panel_() {
     } else if (mode == "Fan") {
       this->mode = climate::CLIMATE_MODE_FAN_ONLY;
     } else if (mode == "Auto") {
+      // not offered in Home Assistant (see traits()), but shown if the panel ever reports it
       this->mode = climate::CLIMATE_MODE_AUTO;
     } else {
       ESP_LOGW(TAG, "Unknown AC_DOM_FJ_MODE '%s', mode left unchanged", mode.c_str());
@@ -133,7 +132,8 @@ climate::ClimateTraits FendtDometicClimate::traits() {
   traits.add_supported_mode(climate::CLIMATE_MODE_COOL);
   traits.add_supported_mode(climate::CLIMATE_MODE_HEAT);
   traits.add_supported_mode(climate::CLIMATE_MODE_FAN_ONLY);
-  traits.add_supported_mode(climate::CLIMATE_MODE_AUTO);
+  // No CLIMATE_MODE_AUTO: the panel answers net-AC_DOM_FJ_MODE-Auto with MODE:Fan (540 KMFE,
+  // 2026-10-12), so offering it would only switch the A/C to fan-only.
   traits.add_supported_fan_mode(climate::CLIMATE_FAN_AUTO);
   traits.add_supported_fan_mode(climate::CLIMATE_FAN_LOW);
   traits.add_supported_fan_mode(climate::CLIMATE_FAN_MEDIUM);

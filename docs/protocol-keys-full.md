@@ -129,8 +129,10 @@ Vlastní teplotu klima nehlásí → pro `climate` entitu by byla aktuální tep
 **Zápis přes BLE ✅ ověřen 10. 10. 2026** (majitel 540 KMFE, entita „komunikace
 s panelem"): `cmd-tgl:AC_DOM_FJ_ENABLE` · `net-AC_DOM_FJ_MODE-Cool` ·
 `net-AC_DOM_FJ_FAN_SPEED-Slow` · `cmd-set:AC_DOM_FJ_TARGETTEMP=21` — mód a ventilátor
-**textem**, ne číslem. Entita `climate` (`type: dometic_freshjet`) je od 1.5.0 ovládá,
-viz [`home-assistant.md`](home-assistant.md).
+**textem**, ne číslem. Z karty v HA 12. 10. potvrzeny módy `Cool`/`Heat`/`Fan`
+a rychlosti `Slow`/`Med`/`Fast`. ❌ **`net-AC_DOM_FJ_MODE-Auto` panel nepřijme** —
+odpoví `MODE:Fan`. Entita `climate` (`type: dometic_freshjet`) je od 1.5.0 ovládá (bez
+Auto od 1.5.1), viz [`home-assistant.md`](home-assistant.md).
 ⚠️ `AC_TRUMA_AVAILABLE` jednou přišlo s nečitelným bajtem (`\xc1`), pak `1` / `_TYPE` `10` — Trumu uživatel nemá.
 
 ### 🔌 Nezávislý zdroj: CI-Bus přes RS232 ([BastyJuice](https://github.com/BastyJuice/Hobby_Caravan_Serial_2_CI-BUS_Connectivity), od dubna 2026)

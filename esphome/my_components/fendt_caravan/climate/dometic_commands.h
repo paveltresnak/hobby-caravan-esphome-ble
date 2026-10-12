@@ -8,8 +8,9 @@
 //   cmd-set:AC_DOM_FJ_TARGETTEMP=21       -> AC_DOM_FJ_TARGETTEMP:21
 //   net-AC_DOM_FJ_FAN_SPEED-Slow          -> AC_DOM_FJ_FAN_SPEED:Slow
 //   net-AC_DOM_FJ_MODE-Cool               -> AC_DOM_FJ_MODE:Cool
-// Fan speed and mode take the same words the panel reports (Auto/Slow/Med/Fast,
-// Auto/Cool/Heat/Fan); only Slow and Cool have been sent so far.
+// Fan speed and mode take the same words the panel reports. Tried from Home Assistant on
+// 2026-10-12: modes Cool/Heat/Fan and fan speeds Slow/Med/Fast confirmed. Mode Auto is not
+// accepted over BLE - the panel answers net-AC_DOM_FJ_MODE-Auto with AC_DOM_FJ_MODE:Fan.
 #include <optional>
 #include <string>
 #include <vector>

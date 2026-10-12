@@ -99,13 +99,14 @@ climate:
 | `FAN_SPEED` `Auto` / `Slow` / `Med` / `Fast` | *Auto* / *Low* / *Medium* / *High* |
 | `TARGETTEMP` | cílová teplota (celé °C, rozsah v HA 16–31, jde zúžit přes `visual:`) |
 
-**Ovládání z HA (od 1.5.0)** posílá příkazy, které majitel 540 KMFE 10. 10. 2026 ověřil
-přes RAW entitu (panel na každý odpověděl do sekundy změněným klíčem):
+**Ovládání z HA (od 1.5.0)** posílá příkazy, které majitel 540 KMFE ověřil 10. 10. 2026
+přes RAW entitu a 12. 10. 2026 přímo z karty klimy (panel na každý odpověděl do sekundy
+změněným klíčem):
 
 | Změna v HA | Příkaz |
 |---|---|
 | zapnout / vypnout | `cmd-tgl:AC_DOM_FJ_ENABLE` |
-| mód | `net-AC_DOM_FJ_MODE-Cool` (`Heat` / `Fan` / `Auto`) |
+| mód | `net-AC_DOM_FJ_MODE-Cool` (`Heat` / `Fan`) |
 | ventilátor | `net-AC_DOM_FJ_FAN_SPEED-Slow` (`Auto` / `Med` / `Fast`) |
 | cílová teplota | `cmd-set:AC_DOM_FJ_TARGETTEMP=21` |
 
@@ -113,8 +114,13 @@ Posílá se jen to, co se liší od stavu z panelu. U zapnutí/vypnutí je to nu
 `ENABLE` je **přepínač**, takže „vypnout" u vypnuté klimy by ji zapnulo. Dokud panel
 neřekl, jestli je klima zapnutá, zapnutí ani vypnutí se nepošle (varování v logu).
 Požadavek se v HA ukáže hned; když ho panel do 5 s nepotvrdí, HA se vrátí na stav
-z panelu. Ověřené jsou zatím jen hodnoty `Cool` a `Slow`, ostatní jsou slova, která
-panel sám hlásí. Rychlost `Max` (zná ji sériová strana sběrnice, přes BLE ji zatím nikdo
+z panelu. Ověřené jsou módy `Cool`, `Heat`, `Fan` a rychlosti `Slow`, `Med`, `Fast`;
+`Auto` u ventilátoru je slovo, které panel sám hlásí.
+
+**Mód Auto v HA chybí záměrně (od 1.5.1).** Panel ho přes BLE nepřijme: na
+`net-AC_DOM_FJ_MODE-Auto` odpoví `AC_DOM_FJ_MODE:Fan` a klima jede jen jako ventilátor.
+Kdyby panel někdy Auto sám nahlásil (nastavený jinak než přes BLE), karta ho zobrazí.
+Rychlost `Max` (zná ji sériová strana sběrnice, přes BLE ji zatím nikdo
 neviděl) se zobrazí jako prázdná + varování v logu.
 
 ## Dostupnost & „mimo dosah"

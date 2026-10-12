@@ -157,6 +157,11 @@ z panelu. Přibyl i typ spínače `decke` (`LIGHT_DECKE`, `cmd-tgl` ověřen 8. 
 Ověřeno překladem s `climate:` i bez něj (ESPHome 2026.9.1); živě jen u testera
 (Dometic nemáme).
 
+**1.5.1:** tester 12. 10. prošel z karty v HA zap/vyp, módy, rychlosti ventilátoru
+i teplotu — vše panel potvrdil kromě módu Auto: na `net-AC_DOM_FJ_MODE-Auto` panel
+odpoví `MODE:Fan`. Auto proto z `traits()` vypadlo (HA ho nenabízí a `ClimateCall` ho
+odmítne); čtení `MODE:Auto` zůstává.
+
 ## Zjištěné WRITE formáty (viz [`ble-protocol.md`](ble-protocol.md))
 - on/off (bool): **`cmd-tgl:KEY`** (toggle), `cmd-set:KEY=1` NEfunguje
 - stmívače (0–15): **`net-KEY-N`** (univerzální), `cmd-set` jen na DIM2

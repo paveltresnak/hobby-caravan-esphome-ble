@@ -71,6 +71,20 @@ Install → Start*. Open the ESPHome web UI (dashboard).
 - Hardware, BLE connection, ESP placement → [`hardware.md`](hardware.md).
 - Entities, precision, dashboard → [`home-assistant.md`](home-assistant.md).
 - What each BLE message means → [`ble-protocol.md`](ble-protocol.md) + [`protocol-keys-full.md`](protocol-keys-full.md).
+- Coloured lines in the log, making the log quieter → [`home-assistant.md`](home-assistant.md#logování--jak-moc-je-log-esp-upovídaný) (in Czech).
+  In short: only `[E]` is an error and `[W]` a warning. `[C]` lines are the configuration
+  overview ESPHome prints every time a log viewer connects; they are highlighted in colour
+  but mean nothing. The component's per-message lines (`Notified value:`, `Command sent:`)
+  are `[D]`; to silence them while keeping the rest:
+
+  ```yaml
+  logger:
+    level: DEBUG
+    logs:
+      fendt_caravan: INFO
+  ```
+
+  Or set `level: INFO` to drop `[C]` and `[D]` altogether.
 
 > ℹ️ The detailed reference docs (`flashing`, `hardware`, `home-assistant`, `ble-protocol`)
 > are currently in Czech — translations welcome.

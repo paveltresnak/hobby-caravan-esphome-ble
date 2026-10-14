@@ -123,6 +123,56 @@ Kdyby panel někdy Auto sám nahlásil (nastavený jinak než přes BLE), karta 
 Rychlost `Max` (zná ji sériová strana sběrnice, přes BLE ji zatím nikdo
 neviděl) se zobrazí jako prázdná + varování v logu.
 
+## Logování — jak moc je log ESP upovídaný
+
+Komponenta žádné vlastní nastavení nemá, řídí to standardní blok
+[`logger:`](https://esphome.io/components/logger.html) ESPHome. Úrovně od nejtišší:
+`NONE < ERROR < WARN < INFO < CONFIG < DEBUG < VERBOSE < VERY_VERBOSE`.
+
+- `level:` je **strop při překladu** — co je nad ním, se do firmwaru vůbec nedostane.
+  Prohlížeč logu si pak může zvolit stejnou nebo nižší úroveň, vyšší ne.
+- `logs:` umí pro jednotlivé tagy úroveň **jen snížit** (nad `level:` to nejde).
+
+Co komponenta píše:
+
+| úroveň | co | tag |
+|---|---|---|
+| `[E]` | `Data parse error`, příkaz se nepodařilo zapsat ani na 3. pokus a zahodil se | `FC.COD`, `fendt_caravan` |
+| `[W]` | příkaz zahozen, protože ESP nebylo spojené; opakovaný zápis; klima nepotvrdila zapnutí/vypnutí; neznámý mód/rychlost ventilátoru | `fendt_caravan`, `FC.AC` |
+| `[C]` | přehled konfigurace (senzory, jednotky, State Class …) | `FC.CU` aj. |
+| `[D]` | **`Notified value:`** (každá zpráva z panelu), **`Command sent:`**, `Handshake as` | `fendt_caravan` |
+| `[V]` | podrobnosti pro ladění komponenty | různé |
+
+**Chyba je jen `[E]`, varování `[W]`.** Řádky `[C]` ESPHome vypíše pokaždé, když se
+k ESP připojí prohlížeč logu; barevně jsou zvýrazněné (fialově), takže je snadné je
+splést s chybou — nic neznamenají. S každou další entitou (klima, komunikace
+s panelem …) jich přibude.
+
+Náš `esphome/hobby-caravan.yaml` má `level: DEBUG`, protože `Notified value:` /
+`Command sent:` jsou hlavní nástroj při mapování protokolu. Pro běžný provoz stačí
+ztlumit komponentu a `[D]` zůstane jen pro zbytek:
+
+```yaml
+logger:
+  level: DEBUG             # strop nechat, ať jde při ladění zase přidat
+  logs:
+    fendt_caravan: INFO    # ztlumí Notified value / Command sent / Handshake
+```
+
+Kdo nepotřebuje ani přehled konfigurace, dá rovnou `level: INFO` — zmizí `[C]` i `[D]`
+a zůstanou jen `[I]`, `[W]`, `[E]`. Pro hledání chyby pak stačí vrátit `DEBUG` a nahrát
+přes OTA.
+
+- Řádky `[S][sensor] '…' >> hodnota` **nepíše ESP**, přidává je prohlížeč logu ze stavů
+  entit, takže `logs:` na ně nemá vliv. V příkazové řádce je vypne `esphome logs … --no-states`
+  (nebo proměnná `ESPHOME_LOG_STATES=false`).
+- Na zkoušení příkazů z mobilu, kde log nejde rozumně číst, je lepší
+  [komunikace s panelem](#komunikace-s-panelem--testování-z-mobilu-od-140) (od 1.4.0) — ukáže
+  totéž co `[D]` řádky komponenty, ale přímo v historii entity v HA.
+- ⚠️ `VERY_VERBOSE` nepoužívat a nenechávat otevřených víc prohlížečů logu najednou
+  (~5 a víc) — ESP32-C3 se zahltí, API spojení se resetuje a HA přestane dostávat data.
+  Viz [`flashing.md`](flashing.md).
+
 ## Dostupnost & „mimo dosah"
 `binary_sensor.…_spojeni` (**device_class `connectivity`**) ukazuje **pravdivý stav
 BLE spojení** ESP ↔ HobbyConnect. ⚠️ Nezaměňovat se `sensor.…_napajeni`, což je

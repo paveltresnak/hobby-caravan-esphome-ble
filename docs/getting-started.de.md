@@ -71,6 +71,20 @@ Installieren → Starten*. Öffne die ESPHome-Weboberfläche (Dashboard).
 - Hardware, BLE-Verbindung, ESP-Platzierung → [`hardware.md`](hardware.md).
 - Entitäten, Genauigkeit, Dashboard → [`home-assistant.md`](home-assistant.md).
 - Was jede BLE-Nachricht bedeutet → [`ble-protocol.md`](ble-protocol.md) + [`protocol-keys-full.md`](protocol-keys-full.md).
+- Farbige Zeilen im Log, Log leiser stellen → [`home-assistant.md`](home-assistant.md#logování--jak-moc-je-log-esp-upovídaný) (auf Tschechisch).
+  Kurz: Ein Fehler ist nur `[E]`, eine Warnung `[W]`. Zeilen mit `[C]` sind die
+  Konfigurationsübersicht, die ESPHome jedes Mal ausgibt, wenn sich ein Log-Fenster
+  verbindet; sie sind farbig hervorgehoben, bedeuten aber nichts. Die Zeilen der Komponente
+  zu jeder Nachricht (`Notified value:`, `Command sent:`) sind `[D]`; so werden nur sie leise:
+
+  ```yaml
+  logger:
+    level: DEBUG
+    logs:
+      fendt_caravan: INFO
+  ```
+
+  Oder `level: INFO` setzen, dann fallen `[C]` und `[D]` ganz weg.
 
 > ℹ️ Die ausführlichen Referenz-Dokumente (`flashing`, `hardware`, `home-assistant`,
 > `ble-protocol`) sind derzeit auf Tschechisch — Übersetzungen willkommen.

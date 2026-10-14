@@ -72,3 +72,13 @@ ESPHome → Instalovat → Spustit*. Otevři webové rozhraní ESPHome (dashboar
 - Hardware, BLE spojení, umístění ESP → [`hardware.md`](hardware.md).
 - Entity, přesnost, dashboard → [`home-assistant.md`](home-assistant.md).
 - Co která BLE zpráva znamená → [`ble-protocol.md`](ble-protocol.md) + [`protocol-keys-full.md`](protocol-keys-full.md).
+- Barevné řádky v logu, jak log ztišit → [`home-assistant.md`](home-assistant.md#logování--jak-moc-je-log-esp-upovídaný).
+  Ve zkratce: chyba je jen `[E]`, varování `[W]`; `[C]` je přehled konfigurace po připojení
+  prohlížeče logu. Ztišení komponenty:
+
+  ```yaml
+  logger:
+    level: DEBUG
+    logs:
+      fendt_caravan: INFO
+  ```

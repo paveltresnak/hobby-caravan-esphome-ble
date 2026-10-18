@@ -572,6 +572,14 @@ static void mode_change_of_a_running_ac_sends_only_the_mode() {
   CHECK_STR(joined(dometic_commands(running_ac(), want)), "net-AC_DOM_FJ_MODE-Heat");
 }
 
+// Dry: the panel answers net-AC_DOM_FJ_MODE-Dry with AC_DOM_FJ_MODE:Dry (540 KMFE, 2026-10-17)
+static void dry_mode_of_a_running_ac_is_sent_as_dry() {
+  DometicRequest want;
+  want.on = true;
+  want.mode = "Dry";
+  CHECK_STR(joined(dometic_commands(running_ac(), want)), "net-AC_DOM_FJ_MODE-Dry");
+}
+
 static void switching_on_in_another_mode_toggles_first() {
   DometicState panel = running_ac();
   panel.on = false;
@@ -672,6 +680,7 @@ static const TestCase TESTS[] = {
     {"switching_off_an_ac_that_is_off_sends_nothing", switching_off_an_ac_that_is_off_sends_nothing},
     {"enable_not_reported_yet_is_not_toggled", enable_not_reported_yet_is_not_toggled},
     {"mode_change_of_a_running_ac_sends_only_the_mode", mode_change_of_a_running_ac_sends_only_the_mode},
+    {"dry_mode_of_a_running_ac_is_sent_as_dry", dry_mode_of_a_running_ac_is_sent_as_dry},
     {"switching_on_in_another_mode_toggles_first", switching_on_in_another_mode_toggles_first},
     {"fan_speed_and_target_use_the_verified_formats", fan_speed_and_target_use_the_verified_formats},
     {"unchanged_values_are_not_sent", unchanged_values_are_not_sent},

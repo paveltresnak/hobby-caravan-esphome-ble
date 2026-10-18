@@ -95,7 +95,7 @@ climate:
 | Panel (`AC_DOM_FJ_*`) | Home Assistant |
 |---|---|
 | `ENABLE` `Off` | mód *Off* |
-| `MODE` `Cool` / `Heat` / `Fan` / `Auto` | *Cool* / *Heat* / *Fan only* / *Auto* |
+| `MODE` `Cool` / `Heat` / `Fan` / `Dry` / `Auto` | *Cool* / *Heat* / *Fan only* / *Dry* / *Auto* |
 | `FAN_SPEED` `Auto` / `Slow` / `Med` / `Fast` | *Auto* / *Low* / *Medium* / *High* |
 | `TARGETTEMP` | cílová teplota (celé °C, rozsah v HA 16–31, jde zúžit přes `visual:`) |
 
@@ -106,7 +106,7 @@ změněným klíčem):
 | Změna v HA | Příkaz |
 |---|---|
 | zapnout / vypnout | `cmd-tgl:AC_DOM_FJ_ENABLE` |
-| mód | `net-AC_DOM_FJ_MODE-Cool` (`Heat` / `Fan`) |
+| mód | `net-AC_DOM_FJ_MODE-Cool` (`Heat` / `Fan` / `Dry`) |
 | ventilátor | `net-AC_DOM_FJ_FAN_SPEED-Slow` (`Auto` / `Med` / `Fast`) |
 | cílová teplota | `cmd-set:AC_DOM_FJ_TARGETTEMP=21` |
 
@@ -114,7 +114,8 @@ Posílá se jen to, co se liší od stavu z panelu. U zapnutí/vypnutí je to nu
 `ENABLE` je **přepínač**, takže „vypnout" u vypnuté klimy by ji zapnulo. Dokud panel
 neřekl, jestli je klima zapnutá, zapnutí ani vypnutí se nepošle (varování v logu).
 Požadavek se v HA ukáže hned; když ho panel do 5 s nepotvrdí, HA se vrátí na stav
-z panelu. Ověřené jsou módy `Cool`, `Heat`, `Fan` a rychlosti `Slow`, `Med`, `Fast`;
+z panelu. Ověřené jsou módy `Cool`, `Heat`, `Fan`, `Dry` (od 1.5.2; panel odpověděl
+`AC_DOM_FJ_MODE:Dry` 17. 10. 2026, z karty v HA zatím neověřeno) a rychlosti `Slow`, `Med`, `Fast`;
 `Auto` u ventilátoru je slovo, které panel sám hlásí.
 
 **Mód Auto v HA chybí záměrně (od 1.5.1).** Panel ho přes BLE nepřijme: na

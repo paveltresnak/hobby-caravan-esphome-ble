@@ -11,6 +11,7 @@
 // Fan speed and mode take the same words the panel reports. Tried from Home Assistant on
 // 2026-10-12: modes Cool/Heat/Fan and fan speeds Slow/Med/Fast confirmed. Mode Auto is not
 // accepted over BLE - the panel answers net-AC_DOM_FJ_MODE-Auto with AC_DOM_FJ_MODE:Fan.
+// Mode Dry confirmed by the panel's answer AC_DOM_FJ_MODE:Dry on 2026-10-17.
 #include <optional>
 #include <string>
 #include <vector>
